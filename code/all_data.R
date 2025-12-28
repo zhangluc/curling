@@ -34,3 +34,13 @@ message(paste("Ends rows: ", nrow(ends)))
 message(paste("Games rows: ", nrow(games)))
 message(paste("Stones rows: ", nrow(stones)))
 message(paste("Teams rows: ", nrow(teams)))
+
+#to save dfs
+'''
+write_csv(competition, "dfs/Competition.csv")
+write_csv(competitors, "dfs/Competitors.csv")
+write_csv(ends,        "dfs/Ends.csv")
+write_csv(games,       "dfs/Games.csv")
+write_csv(stones,      "dfs/Stones.csv")
+write_csv(teams,       "dfs/Teams.csv")
+'''
