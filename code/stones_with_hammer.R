@@ -1,4 +1,4 @@
-# adds Has_Hammer column to Stones.csv (0 = no hammer, 1 = has hammer)
+# adds Hammer_TeamID & Has_Hammer column to Stones.csv (0 = no hammer, 1 = has hammer)
 
 library(readr)
 library(dplyr)
@@ -51,9 +51,7 @@ mean(hammer_check$Switched, na.rm = TRUE) #if n>1, it does NOT alternate every e
 
 # how many switched vs not
 table(hammer_check$Switched, useNA = "ifany")
-'''
-interpretation of table:
-•	TRUE → hammer changed from last end
-•	FALSE → hammer stayed the same
-•	NA → first end of a game (no previous end to compare)
-'''
+#interpretation of table:
+#•	TRUE → hammer changed from last end
+#•	FALSE → hammer stayed the same
+#•	NA → first end of a game (no previous end to compare)'''
