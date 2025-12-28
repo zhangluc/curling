@@ -7,14 +7,12 @@ library(dplyr)
 stones <- read_csv("dfs/Stones.csv")
 
 # Step 1: Identify hammer team per end
-# In mixed doubles, stones 7–12 are thrown by the hammer team
 hammer_by_end <- stones %>%
-  filter(ShotID >= 7) %>%   # hammer team shots
   group_by(CompetitionID, SessionID, GameID, EndID) %>%
-  summarise(
-    Hammer_TeamID = first(TeamID),
-    .groups = "drop"
-  )
+  slice_max(order_by = ShotID, n = 1, with_ties = FALSE) %>%
+  ungroup() %>%
+  select(CompetitionID, SessionID, GameID, EndID,
+         Hammer_TeamID = TeamID)
 
 # Step 2: Join hammer info back to FULL stones data
 stones_with_hammer <- stones %>%
@@ -29,5 +27,33 @@ stones_with_hammer <- stones %>%
 # View result
 View(stones_with_hammer)
 
-#writing the file
-#write_csv(stones_with_hammer, "dfs/stones_with_hammer.csv")
+# Optional: save
+write_csv(stones_with_hammer, "dfs/stones_with_hammer.csv")
+
+#makes sure that the number of teams that have the hammer per end is 1
+stones_with_hammer %>%
+  group_by(CompetitionID, SessionID, GameID, EndID) %>%
+  summarise(
+    n_hammer_teams = n_distinct(TeamID[Has_Hammer == 1])
+  )
+
+hammer_check <- hammer_by_end %>%
+  arrange(CompetitionID, SessionID, GameID, EndID) %>%
+  group_by(CompetitionID, SessionID, GameID) %>%
+  mutate(
+    PrevHammer = lag(Hammer_TeamID),
+    Switched = ifelse(is.na(PrevHammer), NA, Hammer_TeamID != PrevHammer)
+  ) %>%
+  ungroup()
+
+# overall switch rate (ignores first end of each game)
+mean(hammer_check$Switched, na.rm = TRUE) #if n>1, it does NOT alternate every end in your data (shows how often it doesn’t).
+
+# how many switched vs not
+table(hammer_check$Switched, useNA = "ifany")
+'''
+interpretation of table:
+•	TRUE → hammer changed from last end
+•	FALSE → hammer stayed the same
+•	NA → first end of a game (no previous end to compare)
+'''
