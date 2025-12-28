@@ -28,3 +28,6 @@ stones_with_hammer <- stones %>%
 
 # View result
 View(stones_with_hammer)
+
+#writing the file
+#write_csv(stones_with_hammer, "dfs/stones_with_hammer.csv")
