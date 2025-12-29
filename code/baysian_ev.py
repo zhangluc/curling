@@ -1,19 +1,37 @@
 import torch
+import pyro
+import pyro.distributions as dist
 
-def bayesian_ev(features, side):
-    """Estimate EV of calling Power Play on a side using posterior samples"""
-    f = torch.tensor([features], dtype=torch.float)
-    w_samples = posterior["w"]
-    b_samples = posterior["b"]
+# Load trained Bayesian model weights
+posterior = torch.load("/Users/brentkong/Documents/curling/weights/unitddpm_<function BaysianRegression at 0x1208e0860>_weights.pt")
 
-    # Compute EV over posterior
-    evs = torch.exp(f @ w_samples.T + b_samples)
-    return evs.mean().item()
+def bayesian_ev(features, posterior):
+    f = torch.tensor([list(features.values())], dtype=torch.float)
+
+    logits = f @ posterior["w"].T + posterior["b"]
+    probs = dist.OrderedLogistic(logits, posterior["cutpoints"]).probs
+
+    values = torch.arange(probs.shape[-1], dtype=torch.float)
+    ev_per_sample = (probs * values).sum(-1)
+
+    ev_mean = ev_per_sample.mean().item()
+    ev_std = ev_per_sample.std().item()
+    return ev_mean, ev_std
+
+def bayesian_ev_continuous(features, posterior):
+    f = torch.tensor([list(features.values())], dtype=torch.float)
+    
+    mu_samples = f @ posterior["w"].T + posterior["b"] 
+    
+    ev_mean = mu_samples.mean().item()
+    ev_std = mu_samples.std().item()
+    
+    return ev_mean, ev_std
+
 
 state = {
-    "PowerPlay": 0,  # not used yet
     "HasHammer": 1,
-    "ScoreDiff": -1,
+    "PowerPlay": 2,
     "PP_Right": 0.65,
     "PP_Left": 0.35,
     "BurialDepth": 100,
@@ -22,6 +40,8 @@ state = {
     "SideOpenness": 4
 }
 
-ev_r = bayesian_ev(state, 1)
-ev_l = bayesian_ev(state, 2)
+ev_r = bayesian_ev_continuous(state, posterior)
+ev_l = bayesian_ev_continuous(state, posterior)
 print("EV Right:", ev_r, "EV Left:", ev_l)
+
+# python baysian_ev.py
