@@ -29,7 +29,18 @@ def bayesian_ev_continuous(features, posterior):
     return ev_mean, ev_std
 
 
-state = {
+state_r = {
+    "HasHammer": 1,
+    "PowerPlay": 1,
+    "PP_Right": 0.65,
+    "PP_Left": 0.35,
+    "BurialDepth": 100,
+    "GuardAngle": 0.2,
+    "ClusterIndex": 0.5,
+    "SideOpenness": 4
+}
+
+state_l = {
     "HasHammer": 1,
     "PowerPlay": 2,
     "PP_Right": 0.65,
@@ -40,8 +51,8 @@ state = {
     "SideOpenness": 4
 }
 
-ev_r = bayesian_ev_continuous(state, posterior)
-ev_l = bayesian_ev_continuous(state, posterior)
+ev_r = bayesian_ev_continuous(state_r, posterior)
+ev_l = bayesian_ev_continuous(state_l, posterior)
 print("EV Right:", ev_r, "EV Left:", ev_l)
 
 # python baysian_ev.py
