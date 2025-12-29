@@ -1,1 +1,4 @@
 /data
+*.md
+.venv
+.mypy_cache
