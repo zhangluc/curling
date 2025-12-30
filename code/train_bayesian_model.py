@@ -4,10 +4,12 @@ import pyro
 import pyro.distributions as dist
 from pyro.infer import MCMC, NUTS
 
-df = pd.read_csv("/Users/brentkong/Documents/curling/processed_data/stones_processed.csv")
+df = pd.read_csv("/Users/brentkong/Documents/curling/processed_data/ends_processed.csv")
 
-features = ['Task', 'Points', 'ShotID', 'Has_Hammer', 'PowerPlay',
-            'BurialDepth', 'GuardAngle', 'ClusterIndex', 'SideOpenness']
+features = ["Has_Hammer",
+            "PowerPlay",
+            "EndID",
+            "PrevScoreDiff"]
 
 X = torch.tensor(df[features].values, dtype=torch.float)
 y = torch.tensor(df["Result"].values, dtype=torch.long)
@@ -44,4 +46,4 @@ if __name__ == "__main__":
     torch.save(posterior, f"/Users/brentkong/Documents/curling/weights/unitddpm_{model}_weights.pt")
 
 
-# python baysian_inference_model.py
+# python train_bayesian_model.py
