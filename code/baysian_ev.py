@@ -42,7 +42,7 @@ state_r = {
 
 state_l = {
     "HasHammer": 1,
-    "PowerPlay": 2,
+    "PowerPlay": 0,
     "PP_Right": 0.65,
     "PP_Left": 0.35,
     "BurialDepth": 100,

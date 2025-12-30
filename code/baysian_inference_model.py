@@ -4,14 +4,12 @@ import pyro
 import pyro.distributions as dist
 from pyro.infer import MCMC, NUTS
 
-df = pd.read_csv("/Users/brentkong/Documents/curling/processed_data/ends_processed.csv")
+df = pd.read_csv("/Users/brentkong/Documents/curling/processed_data/stones_processed.csv")
 
-features = ["Has_Hammer", "PowerPlay", "PP_Right", "PP_Left",
-            "BurialDepth", "GuardAngle", "ClusterIndex", "SideOpenness"]
+features = ['Task', 'Points', 'ShotID', 'Has_Hammer', 'PowerPlay',
+            'BurialDepth', 'GuardAngle', 'ClusterIndex', 'SideOpenness']
 
 X = torch.tensor(df[features].values, dtype=torch.float)
-
-#df["Result"] = df["Result"].clip(0, 6)
 y = torch.tensor(df["Result"].values, dtype=torch.long)
 
 
