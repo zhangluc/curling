@@ -36,16 +36,11 @@ for _ in range(1000):
 categories = list(frequency_dict.keys())
 frequencies = list(frequency_dict.values())
 
-# 4. Create the bar plot
-plt.figure(figsize=(8, 6)) # Optional: adjust figure size
+plt.figure(figsize=(8, 6))
 plt.bar(categories, frequencies, color='skyblue')
-
-# 5. Add titles and labels
 plt.title('Frequency Plot of Items')
 plt.xlabel('End')
 plt.ylabel('Frequency')
-
-# 6. Display the plot
 plt.show()
 
 """
