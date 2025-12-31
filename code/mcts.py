@@ -11,21 +11,31 @@ class MCTSNode:
         self.visits = 0
         self.total_reward = 0.0
         self.action_taken = action_taken  
+        self._legal_actions = state.legal_actions()
 
     def is_fully_expanded(self):
-        return len(self.children) == len(self.state.legal_actions())
+        return len(self.children) == len(self._legal_actions)
 
     def best_child(self, c_param=1.4):
-        choices_weights = [
-            (child.total_reward / child.visits) + 
-            c_param * math.sqrt((2 * math.log(self.visits) / child.visits))
-            for child in self.children
-        ]
-        return self.children[choices_weights.index(max(choices_weights))]
+        best = None
+        best_ucb = -float("inf")
+
+        for child in self.children:
+            if child.visits == 0:
+                return child
+            
+            avg_reward = child.total_reward / child.visits
+            ucb = avg_reward + c_param * math.sqrt(math.log(self.visits) / child.visits)
+
+            if ucb > best_ucb:
+                best_ucb = ucb
+                best = child
+    
+        return best
 
     def expand(self, ev_model):
         tried_actions = [child.action_taken for child in self.children]
-        untried_actions = [a for a in self.state.legal_actions() if a not in tried_actions]
+        untried_actions = [a for a in self._legal_actions if a not in tried_actions]
         if not untried_actions:
             return None
 
@@ -42,27 +52,21 @@ class MCTSNode:
         while not current_state.is_terminal():
             legal_actions = current_state.legal_actions()
             hammer = current_state.hammer_team
-            non_hammer = [t for t in current_state.current_score.keys() if t != hammer][0]
+            opponent = [t for t in current_state.current_score if t != hammer][0]
 
             ev_scores = []
             for action in legal_actions:
-                ev_hammer, _ = ev_model(current_state.features_for_ev(action, hammer, non_hammer, True))
-                ev_non_hammer, _ = ev_model(current_state.features_for_ev(action, hammer, non_hammer, False))
-                ev_net = ev_hammer - ev_non_hammer
-
-                if hammer != root_team:
-                    ev_net *= -1
-
+                ev_hammer, _ = ev_model(current_state.features_for_ev(action, hammer, opponent, True))
+                ev_opponent, _ = ev_model(current_state.features_for_ev(action, hammer, opponent, False))
+                ev_net = ev_hammer - ev_opponent
                 ev_scores.append(ev_net)
             
-            best_idx = ev_scores.index(max(ev_scores))
-            action = legal_actions[best_idx]
+            e = np.exp(np.array(ev_scores))
+            p = e / np.sum(e)
+            action = np.random.choice(legal_actions, p=p)
 
             current_state = current_state.next_state(action, ev_model)
 
-        #reward = current_state.current_score[root_team] - current_state.current_score[
-        #    [t for t in current_state.current_score if t != root_team][0]
-        #]
         reward = current_state.current_score[root_team]
         return reward
     
@@ -71,7 +75,6 @@ class MCTSNode:
         self.total_reward += reward
         if self.parent:
             self.parent.backpropagate(reward)
-
 
 class MCTS:
     def __init__(self, ev_model, num_simulations):
@@ -82,22 +85,26 @@ class MCTS:
         root_node = MCTSNode(root_state)
         for _ in range(self.num_simulations):
             node = root_node
+
             while node.is_fully_expanded() and node.children:
                 node = node.best_child()
+            
             if not node.state.is_terminal():
-                node = node.expand(self.ev_model)
+                child = node.expand(self.ev_model)
+                if child:
+                    node = child
+
             reward = node.simulate(self.ev_model)
             node.backpropagate(reward)
 
-        best_child = max(root_node.children, key=lambda c: c.total_reward / c.visits)
-        best_action = best_child.action_taken
+        if not root_node.children:
+            return "NO_PP", 0
+        
+        for c in root_node.children:
+            print(c.action_taken, "visits:", c.visits, "avg reward:", c.total_reward / (c.visits + 1e-6))
 
-        rewards = []
-        for child in root_node.children:
-            avg = child.total_reward / child.visits if child.visits > 0 else 0
-            rewards.append(avg)
-
-        expected_score = np.mean(rewards)
-        uncertainty = np.std(rewards)
-
-        return best_action, expected_score, uncertainty
+        best = max(root_node.children, key=lambda c: c.total_reward / (c.visits + 1e-6))
+        
+        return best.action_taken, best.total_reward / best.visits
+        
+       

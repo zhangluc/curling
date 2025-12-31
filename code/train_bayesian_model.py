@@ -7,7 +7,7 @@ from pyro.infer import MCMC, NUTS
 df = pd.read_csv("/Users/brentkong/Documents/curling/processed_data/ends_processed.csv")
 
 features = ["Has_Hammer",
-            "PowerPlay",
+            "PP_NONE", "PP_LEFT", "PP_RIGHT",
             "EndID",
             "PrevScoreDiff"]
 
@@ -45,5 +45,7 @@ if __name__ == "__main__":
 
     torch.save(posterior, f"/Users/brentkong/Documents/curling/weights/unitddpm_{model}_weights.pt")
 
+
+# train with CumulativeHammerScore
 
 # python train_bayesian_model.py
