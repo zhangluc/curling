@@ -2,7 +2,7 @@ import torch
 import pyro
 import pyro.distributions as dist
 
-posterior = torch.load("/Users/brentkong/Documents/curling/weights/unitddpm_<function BaysianRegression at 0x1230e09a0>_weights.pt")
+posterior = torch.load("/Users/brentkong/Documents/curling/weights/unitddpm_<function BaysianRegression at 0x12d9e0ae0>_weights.pt")
 
 def bayesian_eval_ordered(features, posterior = posterior):
     f = torch.tensor([list(features.values())], dtype=torch.float)

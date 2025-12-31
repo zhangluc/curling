@@ -1,64 +1,73 @@
+import numpy as np
+from prob_table import PROB_TABLE_END_DIFF
+
 class GameState:
-    def __init__(self, current_score, end_number, root_team, hammer_team, powerplay_used, max_ends=8, powerplays_remaining = 1):
+    def __init__(self, current_score, end_number, root_team, hammer_team, powerplay_used, max_ends=8, powerplays_remaining = None):
         self.current_score = current_score  # dict: {team1: score1, team2: score2}
         self.end_number = end_number
         self.root_team = root_team
         self.hammer_team = hammer_team      # team_id that has hammer this end
         self.powerplay_used = powerplay_used  # dict: {team1: bool, team2: bool}
         self.max_ends = max_ends
-        self.powerplays_remaining = powerplays_remaining
+
+        if powerplays_remaining is None:
+            self.powerplays_remaining = {
+                t: 1 for t in current_score.keys()
+            }
+        else:
+            self.powerplays_remaining = powerplays_remaining
 
     def is_terminal(self):
         return self.end_number > self.max_ends 
 
     def legal_actions(self):
-        if self.powerplays_remaining > 0 and not self.powerplay_used[self.hammer_team]:
-            return ["NO_PP", "PP_RIGHT", "PP_LEFT"]
+        if self.powerplays_remaining[self.hammer_team] > 0:
+            return ["NO_PP", "PP"]
         return ["NO_PP"]
 
-    def features_for_ev(self, action, hammer, non_hammer, is_hammer_team):
+    def features_for_ev(self, team, action = None):
+        opp = [t for t in self.current_score if t != team][0]
         return {
-            "HasHammer": 1 if is_hammer_team else 0,
-            "PP_NONE": 1 if action == "NO_PP" else 0, 
-            "PP_LEFT": 1 if action == "PP_LEFT" else 0, 
-            "PP_RIGHT": 1 if action == "PP_RIGHT" else 0, 
+            "HasHammer": int(team == self.hammer_team),
+            "PowerPlay": int(action == "PP") if action else 0,
             "EndNumber": self.end_number,
-            "PrevScoreDiff": 
-            self.current_score[hammer] - self.current_score[non_hammer] 
-            if is_hammer_team else 
-            self.current_score[non_hammer] - self.current_score[hammer]
+            "ScoreDiff": self.current_score[team] - self.current_score[opp],
         }
 
-    def next_state(self, action, ev_model):
+    def sample_end_score(self):
         hammer = self.hammer_team
-        non_hammer = [t for t in self.current_score.keys() if t != hammer][0]
+        opp = [t for t in self.current_score if t != hammer][0]
 
-        ev_hammer, _ = ev_model(self.features_for_ev(action, hammer, non_hammer, True))
-        ev_non_hammer, _ = ev_model(self.features_for_ev(action, hammer, non_hammer, False))
+        result = np.random.choice(list(PROB_TABLE_END_DIFF.keys()), p=list(PROB_TABLE_END_DIFF.values()))
 
-        score_hammer = ev_hammer
-        score_non_hammer = ev_non_hammer
+        if result > 0:
+            return {hammer: result, opp: 0}
+        elif result < 0:
+            return {hammer: 0, opp: -result}
+        else:
+            return {hammer: 0, opp: 0}
+
+    def next_state(self, action):
+        hammer = self.hammer_team
+        opp = [t for t in self.current_score.keys() if t != hammer][0]
+
+        score_delta = self.sample_end_score()
 
         new_score = self.current_score.copy()
-        new_score[hammer] += score_hammer
-        new_score[non_hammer] += score_non_hammer
+        new_score[hammer] += score_delta[hammer]
+        new_score[opp] += score_delta[opp]
 
-        # If hammer team scores, other team gets hammer.  
-        # If team without hammer scores, hammer team keeps hammer.
-        # If blank, switch hammer.
-        if score_hammer > score_non_hammer:
-            next_hammer = non_hammer  
-        elif score_hammer < score_non_hammer:
-            next_hammer = hammer       
-        else: 
-            next_hammer = non_hammer
-
+        if score_delta[hammer] > 0:
+            next_hammer = opp
+        else:
+            next_hammer = hammer
+        
         new_pp_used = self.powerplay_used.copy()
-        new_pp_remaining = self.powerplays_remaining
+        new_pp_remaining = self.powerplays_remaining.copy()
 
-        if action in ["PP_RIGHT", "PP_LEFT"]:
+        if action in ["PP"]:
             new_pp_used[hammer] = True
-            new_pp_remaining -= 1
+            new_pp_remaining[hammer] -= 1
 
         return GameState(
             current_score=new_score,
@@ -66,8 +75,8 @@ class GameState:
             root_team=self.root_team,       
             hammer_team=next_hammer,       
             powerplay_used=new_pp_used,
-            max_ends=self.max_ends,
-            powerplays_remaining = new_pp_remaining
+            powerplays_remaining = new_pp_remaining,
+            max_ends=self.max_ends
         )
     
     

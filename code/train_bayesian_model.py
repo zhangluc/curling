@@ -7,7 +7,7 @@ from pyro.infer import MCMC, NUTS
 df = pd.read_csv("/Users/brentkong/Documents/curling/processed_data/ends_processed.csv")
 
 features = ["Has_Hammer",
-            "PP_NONE", "PP_LEFT", "PP_RIGHT",
+            "PowerPlayBool",
             "EndID",
             "PrevScoreDiff"]
 
