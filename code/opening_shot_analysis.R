@@ -1,4 +1,4 @@
-# STILL WORKING ON SOME ISSUES !!!
+# STILL WORKING ON ISSUES !!!
 #
 #
 #opening shot analysis

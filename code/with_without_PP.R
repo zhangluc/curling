@@ -1,4 +1,4 @@
-# STILL WORKING ON GRAPHS (SOME AREN'T ENTIRELY CORRECT & TRYNA ADD MORE)
+# STILL WORKING ON THE GRAPHS (SOME AREN'T ENTIRELY CORRECT & TRYNA ADD MORE)
 #
 #
 # shows the impact of power play by comparing to what would have happened wihtout power play
