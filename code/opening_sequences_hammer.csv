@@ -1,0 +1,334 @@
+Has_Hammer,OpeningSequence,AvgOpeningPoints,NumEnds
+0,Through → Draw → Clearing,17.0,1
+1,Through → Clearing → Clearing,13.0,1
+1,Wick / Soft Peeling → Clearing → Promotion Take-out,13.0,1
+1,Wick / Soft Peeling → Take-out → Promotion Take-out,12.0,1
+1,Raise / Tap-back → Wick / Soft Peeling → Draw,12.0,1
+0,Draw → Front → Take-out,12.0,1
+0,Draw → Guard → Clearing,12.0,1
+0,Draw → Guard → Raise / Tap-back,12.0,1
+0,Guard → Freeze → Draw,12.0,1
+0,Raise / Tap-back → Raise / Tap-back → Raise / Tap-back,12.0,1
+0,Raise / Tap-back → Raise / Tap-back → Guard,12.0,1
+1,Raise / Tap-back → Draw → Guard,12.0,2
+1,Raise / Tap-back → Hit and Roll → Draw,12.0,1
+1,Raise / Tap-back → Raise / Tap-back → Promotion Take-out,12.0,1
+1,Raise / Tap-back → Hit and Roll → Hit and Roll,12.0,2
+1,Raise / Tap-back → Guard → Raise / Tap-back,12.0,1
+0,Draw → Wick / Soft Peeling → Wick / Soft Peeling,12.0,1
+1,Raise / Tap-back → Promotion Take-out → Raise / Tap-back,12.0,1
+1,Raise / Tap-back → Raise / Tap-back → Guard,12.0,2
+1,Raise / Tap-back → Take-out → Clearing,12.0,1
+1,Wick / Soft Peeling → Take-out → Raise / Tap-back,12.0,1
+1,Draw → Guard → Promotion Take-out,12.0,1
+1,Draw → Guard → Guard,12.0,2
+0,Raise / Tap-back → Freeze → Take-out,12.0,1
+1,Draw → Clearing → Wick / Soft Peeling,12.0,1
+0,Draw → Front → Draw,12.0,1
+0,Draw → Draw → Freeze,12.0,1
+1,Wick / Soft Peeling → Draw → Draw,12.0,2
+1,Draw → Freeze → Double Take-out,12.0,1
+1,Freeze → Freeze → Clearing,12.0,1
+1,Freeze → Draw → Raise / Tap-back,12.0,1
+1,Clearing → Clearing → Clearing,12.0,1
+1,Guard → Draw → Guard,12.0,2
+1,Guard → Hit and Roll → Double Take-out,12.0,1
+0,Guard → Draw → Raise / Tap-back,12.0,1
+0,Guard → Draw → Hit and Roll,12.0,1
+1,Raise / Tap-back → Promotion Take-out → Guard,12.0,1
+1,Guard → Take-out → Take-out,12.0,1
+0,Raise / Tap-back → Guard → Hit and Roll,12.0,1
+1,Guard → Raise / Tap-back → Take-out,12.0,1
+0,Guard → Raise / Tap-back → Draw,12.0,1
+0,Wick / Soft Peeling → Draw → Guard,12.0,2
+1,Raise / Tap-back → Raise / Tap-back → Take-out,11.75,4
+0,Raise / Tap-back → Draw → Guard,11.5,2
+1,Freeze → Draw → Draw,11.5,2
+0,Draw → Guard → Hit and Roll,11.5,4
+0,Freeze → Draw → Draw,11.5,2
+0,Draw → Freeze → Guard,11.5,4
+0,Draw → Freeze → Draw,11.5,4
+0,Front → Guard → Guard,11.333333333333334,3
+1,Draw → Take-out → Guard,11.333333333333334,3
+1,Raise / Tap-back → Take-out → Draw,11.333333333333334,3
+0,Front → Front → Front,11.25,12
+0,Guard → Draw → Take-out,11.25,4
+1,Draw → Take-out → Clearing,11.11111111111111,9
+1,Guard → Raise / Tap-back → Guard,11.0,1
+0,Raise / Tap-back → Wick / Soft Peeling → Hit and Roll,11.0,1
+1,Front → Draw → Raise / Tap-back,11.0,1
+1,Guard → Hit and Roll → Take-out,11.0,2
+0,Draw → Front → Front,11.0,1
+1,Draw → Wick / Soft Peeling → Guard,11.0,1
+1,Draw → Hit and Roll → Clearing,11.0,2
+1,Take-out → Take-out → Take-out,11.0,1
+1,Wick / Soft Peeling → Raise / Tap-back → Raise / Tap-back,11.0,2
+0,Draw → Clearing → Draw,11.0,1
+1,Guard → Take-out → Hit and Roll,11.0,2
+0,Draw → Front → Hit and Roll,11.0,1
+1,Wick / Soft Peeling → Hit and Roll → Draw,11.0,1
+1,Wick / Soft Peeling → Hit and Roll → Clearing,11.0,1
+1,Raise / Tap-back → Double Take-out → Clearing,11.0,1
+0,Front → Draw → Take-out,11.0,3
+0,Guard → Draw → Wick / Soft Peeling,11.0,1
+0,Guard → Draw → Promotion Take-out,11.0,1
+1,Raise / Tap-back → Double Take-out → Take-out,11.0,2
+1,Raise / Tap-back → Freeze → Draw,11.0,1
+0,Guard → Draw → Double Take-out,11.0,1
+1,Raise / Tap-back → Take-out → Promotion Take-out,11.0,1
+1,Raise / Tap-back → Clearing → Double Take-out,11.0,4
+1,Wick / Soft Peeling → Double Take-out → Take-out,11.0,1
+1,Raise / Tap-back → Promotion Take-out → Clearing,11.0,1
+1,Raise / Tap-back → Hit and Roll → Guard,11.0,1
+0,Draw → Guard → Guard,10.911764705882353,34
+1,Draw → Wick / Soft Peeling → Take-out,10.8,5
+0,Front → Front → Draw,10.8,10
+0,Draw → Raise / Tap-back → Clearing,10.75,4
+0,Draw → Guard → Draw,10.722222222222221,18
+0,Guard → Guard → Draw,10.666666666666666,3
+0,Draw → Draw → Guard,10.654761904761905,336
+1,Draw → Raise / Tap-back → Guard,10.625,8
+1,Draw → Draw → Guard,10.571428571428571,56
+0,Front → Draw → Guard,10.5625,16
+0,Draw → Raise / Tap-back → Guard,10.54054054054054,37
+0,Wick / Soft Peeling → Raise / Tap-back → Draw,10.5,2
+0,Raise / Tap-back → Draw → Freeze,10.5,2
+0,Front → Front → Guard,10.5,2
+1,Raise / Tap-back → Raise / Tap-back → Draw,10.5,12
+0,Guard → Guard → Guard,10.5,4
+0,Draw → Freeze → Freeze,10.5,2
+0,Draw → Front → Guard,10.5,2
+1,Raise / Tap-back → Clearing → Clearing,10.5,14
+1,Raise / Tap-back → Draw → Draw,10.423076923076923,26
+0,Guard → Draw → Guard,10.416666666666666,12
+1,Draw → Clearing → Clearing,10.386666666666667,75
+0,Draw → Draw → Front,10.375,8
+0,Guard → Draw → Draw,10.352941176470589,17
+1,Draw → Hit and Roll → Guard,10.333333333333334,3
+1,Draw → Guard → Take-out,10.333333333333334,3
+0,Draw → Wick / Soft Peeling → Guard,10.285714285714286,7
+1,Draw → Raise / Tap-back → Hit and Roll,10.285714285714286,21
+0,Draw → Raise / Tap-back → Take-out,10.23076923076923,13
+0,Draw → Draw → Wick / Soft Peeling,10.181818181818182,11
+1,Draw → Draw → Wick / Soft Peeling,10.181818181818182,11
+1,Draw → Clearing → Raise / Tap-back,10.142857142857142,14
+0,Raise / Tap-back → Draw → Take-out,10.11111111111111,18
+1,Wick / Soft Peeling → Take-out → Draw,10.0,1
+1,Wick / Soft Peeling → Clearing → Hit and Roll,10.0,1
+1,Raise / Tap-back → Wick / Soft Peeling → Take-out,10.0,3
+0,Draw → Guard → Double Take-out,10.0,2
+1,Wick / Soft Peeling → Clearing → Take-out,10.0,2
+0,Raise / Tap-back → Raise / Tap-back → Draw,10.0,1
+0,Raise / Tap-back → Take-out → Take-out,10.0,1
+0,Guard → Front → Draw,10.0,1
+1,Raise / Tap-back → Clearing → Take-out,10.0,1
+1,Raise / Tap-back → Clearing → Promotion Take-out,10.0,1
+0,Guard → Freeze → Freeze,10.0,1
+0,Draw → Wick / Soft Peeling → Double Take-out,10.0,4
+0,Draw → Wick / Soft Peeling → Hit and Roll,10.0,1
+0,Freeze → Front → Double Take-out,10.0,1
+0,Draw → Wick / Soft Peeling → Promotion Take-out,10.0,1
+1,Raise / Tap-back → Draw → Hit and Roll,10.0,2
+0,Guard → Guard → Clearing,10.0,1
+0,Promotion Take-out → Draw → Draw,10.0,1
+1,Guard → Hit and Roll → Raise / Tap-back,10.0,1
+1,Freeze → Clearing → Clearing,10.0,1
+1,Freeze → Freeze → Draw,10.0,1
+1,Front → Draw → Double Take-out,10.0,2
+1,Freeze → Raise / Tap-back → Freeze,10.0,1
+1,Guard → Guard → Double Take-out,10.0,1
+0,Wick / Soft Peeling → Draw → Raise / Tap-back,10.0,1
+0,Wick / Soft Peeling → Hit and Roll → Double Take-out,10.0,1
+0,Wick / Soft Peeling → Guard → Guard,10.0,1
+1,Guard → Raise / Tap-back → Draw,10.0,6
+1,Wick / Soft Peeling → Promotion Take-out → Double Take-out,10.0,1
+1,Wick / Soft Peeling → Hit and Roll → Promotion Take-out,10.0,1
+1,Draw → Double Take-out → Freeze,10.0,1
+1,Draw → Guard → Raise / Tap-back,10.0,3
+1,Draw → Hit and Roll → Double Take-out,10.0,5
+1,Draw → Freeze → Promotion Take-out,10.0,1
+1,Wick / Soft Peeling → Draw → Take-out,10.0,2
+0,Draw → Draw → Draw,9.9394261424017,941
+1,Draw → Hit and Roll → Draw,9.92,25
+0,Raise / Tap-back → Draw → Draw,9.916666666666666,12
+0,Draw → Raise / Tap-back → Draw,9.914634146341463,82
+1,Draw → Guard → Draw,9.866666666666667,15
+0,Draw → Draw → Clearing,9.822222222222223,45
+1,Draw → Raise / Tap-back → Clearing,9.807692307692308,26
+0,Raise / Tap-back → Draw → Clearing,9.8,5
+1,Draw → Take-out → Draw,9.789473684210526,38
+1,Draw → Take-out → Promotion Take-out,9.777777777777779,9
+1,Draw → Wick / Soft Peeling → Raise / Tap-back,9.75,4
+1,Draw → Wick / Soft Peeling → Draw,9.75,12
+1,Wick / Soft Peeling → Double Take-out → Clearing,9.75,4
+1,Raise / Tap-back → Draw → Double Take-out,9.75,8
+0,Front → Guard → Draw,9.75,4
+0,Front → Draw → Front,9.75,4
+1,Wick / Soft Peeling → Take-out → Clearing,9.75,4
+0,Draw → Draw → Raise / Tap-back,9.73248407643312,157
+1,Wick / Soft Peeling → Clearing → Clearing,9.724137931034482,29
+1,Draw → Clearing → Take-out,9.714285714285714,28
+1,Wick / Soft Peeling → Wick / Soft Peeling → Wick / Soft Peeling,9.666666666666666,3
+1,Draw → Raise / Tap-back → Draw,9.645454545454545,110
+1,Draw → Clearing → Double Take-out,9.641509433962264,53
+1,Draw → Draw → Raise / Tap-back,9.621468926553673,177
+0,Raise / Tap-back → Draw → Double Take-out,9.6,15
+1,Raise / Tap-back → Raise / Tap-back → Hit and Roll,9.6,5
+0,Wick / Soft Peeling → Draw → Take-out,9.56,25
+1,Draw → Raise / Tap-back → Raise / Tap-back,9.5,100
+1,Raise / Tap-back → Raise / Tap-back → Raise / Tap-back,9.5,12
+1,Draw → Wick / Soft Peeling → Promotion Take-out,9.5,2
+1,Raise / Tap-back → Double Take-out → Draw,9.5,2
+0,Draw → Guard → Take-out,9.5,4
+1,Draw → Wick / Soft Peeling → Hit and Roll,9.5,2
+1,Draw → Take-out → Raise / Tap-back,9.5,6
+0,Raise / Tap-back → Draw → Hit and Roll,9.5,10
+0,Wick / Soft Peeling → Guard → Double Take-out,9.5,2
+1,Raise / Tap-back → Double Take-out → Promotion Take-out,9.5,4
+0,Draw → Draw → Hit and Roll,9.487804878048781,82
+1,Raise / Tap-back → Draw → Raise / Tap-back,9.476190476190476,21
+0,Wick / Soft Peeling → Draw → Hit and Roll,9.44,25
+1,Draw → Draw → Clearing,9.43,100
+0,Raise / Tap-back → Draw → Raise / Tap-back,9.428571428571429,7
+1,Draw → Hit and Roll → Take-out,9.416666666666666,12
+0,Wick / Soft Peeling → Draw → Draw,9.4,20
+1,Draw → Promotion Take-out → Draw,9.4,15
+1,Draw → Draw → Draw,9.38135593220339,472
+0,Draw → Draw → Take-out,9.367924528301886,106
+1,Draw → Double Take-out → Take-out,9.333333333333334,12
+1,Raise / Tap-back → Take-out → Raise / Tap-back,9.333333333333334,3
+0,Draw → Raise / Tap-back → Raise / Tap-back,9.326530612244898,49
+1,Draw → Clearing → Draw,9.31578947368421,19
+1,Draw → Draw → Hit and Roll,9.292682926829269,41
+1,Draw → Raise / Tap-back → Take-out,9.28,25
+0,Front → Draw → Draw,9.25,20
+1,Draw → Double Take-out → Draw,9.2,50
+1,Raise / Tap-back → Draw → Clearing,9.2,5
+0,Draw → Draw → Double Take-out,9.186046511627907,129
+1,Draw → Double Take-out → Clearing,9.142857142857142,21
+0,Draw → Raise / Tap-back → Double Take-out,9.095238095238095,21
+1,Draw → Take-out → Take-out,9.08108108108108,37
+1,Draw → Draw → Take-out,9.03061224489796,98
+1,Wick / Soft Peeling → Double Take-out → Wick / Soft Peeling,9.0,1
+1,Wick / Soft Peeling → Draw → Wick / Soft Peeling,9.0,1
+1,Draw → Draw → Front,9.0,1
+1,Wick / Soft Peeling → Clearing → Wick / Soft Peeling,9.0,1
+1,Raise / Tap-back → Double Take-out → Hit and Roll,9.0,1
+0,Front → Front → Double Take-out,9.0,1
+1,Raise / Tap-back → Double Take-out → Wick / Soft Peeling,9.0,1
+0,Draw → Wick / Soft Peeling → Draw,9.0,1
+0,Draw → Promotion Take-out → Draw,9.0,1
+0,Draw → Guard → Promotion Take-out,9.0,1
+1,Raise / Tap-back → Raise / Tap-back → Clearing,9.0,3
+1,Guard → Draw → Freeze,9.0,1
+1,Draw → Take-out → Wick / Soft Peeling,9.0,1
+0,Wick / Soft Peeling → Wick / Soft Peeling → Take-out,9.0,3
+0,Wick / Soft Peeling → Raise / Tap-back → Take-out,9.0,1
+1,Guard → Take-out → Double Take-out,9.0,2
+1,Guard → Raise / Tap-back → Double Take-out,9.0,1
+0,Wick / Soft Peeling → Draw → Clearing,9.0,3
+1,Guard → Draw → Raise / Tap-back,9.0,7
+1,Wick / Soft Peeling → Clearing → Draw,9.0,2
+1,Draw → Promotion Take-out → Take-out,9.0,10
+1,Draw → Double Take-out → Hit and Roll,9.0,9
+0,Wick / Soft Peeling → Draw → Double Take-out,8.926829268292684,41
+1,Raise / Tap-back → Draw → Take-out,8.875,8
+1,Draw → Take-out → Hit and Roll,8.857142857142858,14
+1,Draw → Draw → Double Take-out,8.761194029850746,134
+0,Draw → Raise / Tap-back → Wick / Soft Peeling,8.666666666666666,3
+0,Wick / Soft Peeling → Raise / Tap-back → Hit and Roll,8.666666666666666,6
+1,Wick / Soft Peeling → Clearing → Double Take-out,8.666666666666666,3
+1,Draw → Hit and Roll → Hit and Roll,8.625,8
+1,Draw → Wick / Soft Peeling → Double Take-out,8.625,8
+1,Guard → Draw → Double Take-out,8.6,5
+1,Draw → Promotion Take-out → Hit and Roll,8.571428571428571,7
+0,Wick / Soft Peeling → Raise / Tap-back → Promotion Take-out,8.5,2
+1,Raise / Tap-back → Draw → Promotion Take-out,8.5,2
+1,Wick / Soft Peeling → Draw → Double Take-out,8.5,2
+1,Draw → Clearing → Hit and Roll,8.5,6
+1,Draw → Freeze → Draw,8.5,2
+0,Draw → Raise / Tap-back → Hit and Roll,8.5,16
+1,Draw → Raise / Tap-back → Double Take-out,8.46938775510204,49
+1,Draw → Draw → Promotion Take-out,8.420454545454545,88
+1,Wick / Soft Peeling → Double Take-out → Double Take-out,8.333333333333334,3
+1,Draw → Promotion Take-out → Double Take-out,8.23076923076923,13
+1,Guard → Draw → Hit and Roll,8.2,5
+1,Draw → Clearing → Promotion Take-out,8.117647058823529,17
+1,Draw → Double Take-out → Raise / Tap-back,8.066666666666666,15
+1,Draw → Double Take-out → Guard,8.0,1
+1,Wick / Soft Peeling → Promotion Take-out → Clearing,8.0,2
+0,Wick / Soft Peeling → Wick / Soft Peeling → Clearing,8.0,2
+1,Raise / Tap-back → Raise / Tap-back → Double Take-out,8.0,8
+1,Raise / Tap-back → Take-out → Guard,8.0,1
+0,Front → Draw → Raise / Tap-back,8.0,1
+0,Front → Draw → Hit and Roll,8.0,2
+0,Front → Draw → Promotion Take-out,8.0,2
+1,Raise / Tap-back → Clearing → Raise / Tap-back,8.0,1
+0,Front → Raise / Tap-back → Double Take-out,8.0,1
+0,Front → Wick / Soft Peeling → Draw,8.0,1
+0,Freeze → Raise / Tap-back → Take-out,8.0,1
+1,Draw → Clearing → Guard,8.0,2
+1,Raise / Tap-back → Wick / Soft Peeling → Hit and Roll,8.0,1
+0,Wick / Soft Peeling → Hit and Roll → Promotion Take-out,8.0,1
+0,Wick / Soft Peeling → Wick / Soft Peeling → Hit and Roll,8.0,1
+1,Draw → Raise / Tap-back → Wick / Soft Peeling,8.0,4
+1,Guard → Draw → Draw,8.0,21
+1,Guard → Raise / Tap-back → Hit and Roll,8.0,1
+0,Wick / Soft Peeling → Freeze → Double Take-out,8.0,1
+0,Raise / Tap-back → Raise / Tap-back → Promotion Take-out,8.0,1
+1,Raise / Tap-back → Hit and Roll → Raise / Tap-back,8.0,2
+1,Draw → Raise / Tap-back → Promotion Take-out,7.9375,16
+0,Front → Raise / Tap-back → Draw,7.75,4
+1,Draw → Hit and Roll → Raise / Tap-back,7.666666666666667,3
+1,Draw → Double Take-out → Double Take-out,7.527272727272727,55
+0,Raise / Tap-back → Raise / Tap-back → Double Take-out,7.5,10
+1,Wick / Soft Peeling → Wick / Soft Peeling → Clearing,7.5,2
+1,Draw → Double Take-out → Wick / Soft Peeling,7.5,4
+1,Guard → Take-out → Draw,7.333333333333333,3
+1,Raise / Tap-back → Double Take-out → Double Take-out,7.333333333333333,3
+1,Draw → Take-out → Double Take-out,7.285714285714286,21
+0,Draw → Raise / Tap-back → Promotion Take-out,7.2727272727272725,11
+0,Draw → Draw → Promotion Take-out,7.219178082191781,73
+1,Draw → Double Take-out → Promotion Take-out,7.142857142857143,14
+0,Wick / Soft Peeling → Clearing → Double Take-out,7.0,1
+1,Draw → Promotion Take-out → Clearing,7.0,6
+1,Wick / Soft Peeling → Double Take-out → Draw,7.0,1
+1,Guard → Draw → Take-out,7.0,1
+1,Guard → Draw → Clearing,7.0,1
+1,Freeze → Draw → Take-out,7.0,1
+0,Wick / Soft Peeling → Wick / Soft Peeling → Raise / Tap-back,7.0,1
+1,Raise / Tap-back → Take-out → Take-out,7.0,1
+1,Guard → Raise / Tap-back → Raise / Tap-back,7.0,2
+1,Draw → Wick / Soft Peeling → Clearing,7.0,1
+0,Raise / Tap-back → Raise / Tap-back → Hit and Roll,7.0,3
+0,Wick / Soft Peeling → Wick / Soft Peeling → Double Take-out,6.888888888888889,9
+0,Raise / Tap-back → Draw → Promotion Take-out,6.857142857142857,7
+1,Draw → Promotion Take-out → Promotion Take-out,6.636363636363637,22
+1,Guard → Guard → Draw,6.5,2
+1,Draw → Hit and Roll → Promotion Take-out,6.5,4
+1,Draw → Wick / Soft Peeling → Wick / Soft Peeling,6.5,2
+1,Raise / Tap-back → Promotion Take-out → Promotion Take-out,6.333333333333333,3
+0,Draw → Raise / Tap-back → Freeze,6.0,1
+0,Wick / Soft Peeling → Wick / Soft Peeling → Promotion Take-out,6.0,1
+1,Draw → Promotion Take-out → Raise / Tap-back,6.0,4
+1,Wick / Soft Peeling → Draw → Raise / Tap-back,6.0,1
+1,Wick / Soft Peeling → Raise / Tap-back → Draw,6.0,1
+0,Wick / Soft Peeling → Promotion Take-out → Draw,6.0,1
+0,Wick / Soft Peeling → Raise / Tap-back → Double Take-out,6.0,1
+1,Guard → Draw → Promotion Take-out,6.0,1
+0,Wick / Soft Peeling → Raise / Tap-back → Clearing,6.0,2
+1,Take-out → Take-out → Draw,6.0,1
+1,Guard → Clearing → Raise / Tap-back,6.0,1
+0,Wick / Soft Peeling → Draw → Promotion Take-out,5.666666666666667,12
+1,Wick / Soft Peeling → Clearing → Raise / Tap-back,5.5,2
+1,Promotion Take-out → Raise / Tap-back → Double Take-out,5.0,1
+0,Clearing → Draw → Take-out,5.0,1
+1,Clearing → Wick / Soft Peeling → Take-out,5.0,1
+1,Raise / Tap-back → Take-out → Double Take-out,4.5,2
+0,Draw → Freeze → Promotion Take-out,4.0,1
+1,Wick / Soft Peeling → Double Take-out → Promotion Take-out,4.0,2
+0,Front → Draw → Clearing,4.0,1
+1,Raise / Tap-back → Hit and Roll → Double Take-out,4.0,1
+1,Wick / Soft Peeling → Take-out → Take-out,2.5,2
+1,Raise / Tap-back → Take-out → Wick / Soft Peeling,2.0,1
+0,Take-out → Freeze → Promotion Take-out,0.0,1
