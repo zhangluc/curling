@@ -2,69 +2,104 @@ import torch
 from mcts import MCTS
 from gamestate import GameState
 from bayesian_ev import bayesian_eval_continuous
-from prob_table import PROB_TABLE_CUM_DIFF
+from prob_table import PROB_TABLE_END_DIFF
 import numpy as np
-from collections import defaultdict
-import matplotlib.pyplot as plt
+from copy import deepcopy
+import json
 
 posterior = torch.load("/Users/brentkong/Documents/curling/weights/unitddpm_<function BaysianRegression at 0x10f9e0ae0>_weights.pt")
 
+matches = 10000
+frequency_dict = {end: 0 for end in range(1, 9)}  
+frequency_dict["matches"] = matches
+wins_dict = {end: 0 for end in range(1, 9)}  
+draws_dict = {end: 0 for end in range(1, 9)} 
+loss_dict = {end: 0 for end in range(1, 9)}  
 
-frequency_dict = defaultdict(int)
-round_count = defaultdict(int)
-for _ in range(10000):
-    round = np.random.choice([i for i in range(1, 9)], p = [0.125 for _ in range(8)])
-    round_count[round] += 1 
-    result_1 = np.random.choice(list(PROB_TABLE_CUM_DIFF[round].keys()), p=list(PROB_TABLE_CUM_DIFF[round].values()))
-    result_2 = np.random.choice(list(PROB_TABLE_CUM_DIFF[round].keys()), p=list(PROB_TABLE_CUM_DIFF[round].values()))
+wins_hammer, wins_no_hammer = 0, 0
+draws_hammer, draws_no_hammer = 0, 0
+loss_hammer, loss_no_hammer  = 0, 0
 
-    if round == 8:
-        used = True
-    if round == 1:
-        used = False
+for _ in range(matches):
+    hammer = np.random.choice([1, 2])
+    powerplay_used = {1: False, 2: False}
+    current_score = {1: 0, 2: 0}
+    powerplays_remaining = {1: 1, 2: 1}
+    powerplay_end = None
+    root_has_hammer = (hammer == 1)
+    for end in range(1, 9):
+        opp = [t for t in current_score if t != hammer][0]
+        state = GameState(
+            current_score = deepcopy(current_score),
+            end_number = end, 
+            root_team = 1,
+            hammer_team = hammer,
+            powerplay_used = deepcopy(powerplay_used),
+            powerplays_remaining = deepcopy(powerplays_remaining)
+        )   
 
-    used = np.random.choice([True, False], p = [0.5, 0.5])
+        mcts = MCTS(bayesian_eval_continuous, 5000)
+        best_action, _ = mcts.search(state)
 
-    state = GameState(
-        current_score = {20: result_1, 22: result_2}, # cumulative
-        end_number = round, # heading into round 8
-        root_team = 20,
-        hammer_team = 20,
-        powerplay_used = {20: False, 22: used}
-    )   
+        if best_action == "PP" and hammer == 1:
+            frequency_dict[end] += 1
+            powerplay_end = end
 
-    mcts = MCTS(bayesian_eval_continuous, 1000)
-    best_action, expected_net_score = mcts.search(state)
-    if best_action == "PP":
-        frequency_dict[round] += 1
+        dist = PROB_TABLE_END_DIFF[best_action][end]
+        outcomes = list(dist.keys())
+        probs = np.array(list(dist.values()), dtype=float)
+        result = np.random.choice(outcomes, p=probs)        
 
-for key in frequency_dict:
-    frequency_dict[key] /= round_count[key]
+        if result > 0:
+            current_score[hammer] += result
+        elif result < 0:
+            current_score[opp] += -result
+
+        if best_action == "PP":
+            powerplay_used[hammer] = True
+            powerplays_remaining[hammer] -= 1
+
+        scored = result  
+
+        if scored > 0: 
+            hammer = 3 - hammer  
+        elif scored < 0:  
+            hammer = hammer  
+        else:  
+            hammer = 3 - hammer  
+
+    if powerplay_end is not None:
+        if current_score[1] > current_score[2]:
+            wins_dict[powerplay_end] += 1
+        elif current_score[1] < current_score[2]:
+            loss_dict[powerplay_end] += 1
+        else:
+            draws_dict[powerplay_end] += 1
+    
+    if root_has_hammer:
+        if current_score[1] > current_score[2]:
+            wins_hammer += 1
+        elif current_score[1] < current_score[2]:
+            loss_hammer += 1
+        else:
+            draws_hammer += 1
+    else:
+        if current_score[1] > current_score[2]:
+            wins_no_hammer += 1
+        elif current_score[1] < current_score[2]:
+            loss_no_hammer += 1
+        else:
+            draws_no_hammer += 1
+
+hammer_analysis = {
+    "hammer_start": {"wins": wins_hammer, "draws": draws_hammer, "losses": loss_hammer, "matches": sum([wins_hammer, draws_hammer, loss_hammer])},
+    "no_hammer_start": {"wins": wins_no_hammer, "draws": draws_no_hammer, "losses": loss_no_hammer, "matches": sum([wins_no_hammer, draws_no_hammer, loss_no_hammer])}
+}
+
+with open(f'/Users/brentkong/Documents/curling/figures/simulations/frequency_dict_{matches}.json', 'w') as f:
+    json.dump([frequency_dict, wins_dict, loss_dict, draws_dict, hammer_analysis], f, indent=4) 
 
 
-categories = list(frequency_dict.keys())
-frequencies = list(frequency_dict.values())
-
-plt.figure(figsize=(8, 6))
-plt.bar(categories, frequencies, color='skyblue')
-plt.title('Frequency Plot of Items')
-plt.xlabel('End')
-plt.ylabel('Frequency')
-plt.savefig('/Users/brentkong/Documents/curling/figures/Figure.png')
-plt.show()
 
 
-"""
-print("Best Action:", best_action)
-print("Expected Net Score After Best Action:", expected_net_score)
 
-hammer = state.hammer_team
-opp = [t for t in state.current_score if t != hammer][0]
-
-for a in state.legal_actions():
-    ev_h, _ = bayesian_eval_continuous(state.features_for_ev(hammer, a))
-    ev_o, _ = bayesian_eval_continuous(state.features_for_ev(opp, a))
-    print(a, "EV hammer:", ev_h, "EV opponent:", ev_o, "net:", ev_h - ev_o)
-"""
-
-# python run_mcts.py

@@ -1,5 +1,6 @@
 import math
 import random
+import numpy as np
 from copy import deepcopy
 
 class MCTSNode:
@@ -43,23 +44,28 @@ class MCTSNode:
         child_node = MCTSNode(next_state, parent=self, action_taken=action)
         self.children.append(child_node)
         return child_node
+    
+    def win_prob(self, ev, ends_left):
+        sigma = 1.5 / np.sqrt(ends_left)
+        return 1 / (1 + np.exp(-ev / sigma))
 
     def simulate(self, ev_model):
         state = deepcopy(self.state)
-        
+        total_reward = 0
         while not state.is_terminal():
             action = random.choice(state.legal_actions())
             state = state.next_state(action)
         
-        root = self.state.root_team
-        opp = [t for t in state.current_score if t != root][0]
+            root = self.state.root_team
+            opp = [t for t in state.current_score if t != root][0]
 
-        ev_root, _ = ev_model(state.features_for_ev(root))
-        ev_opp, _ = ev_model(state.features_for_ev(opp))
-        
-        weight = math.exp(0.1 * state.end_number)
-        return (ev_root - ev_opp) * weight
-        
+            ev_root, _ = ev_model(state.features_for_ev(root))
+            ev_opp, _ = ev_model(state.features_for_ev(opp))
+            ev_diff = ev_root - ev_opp
+            ends_left = state.max_ends - state.end_number + 1
+            p = self.win_prob(ev_diff, ends_left)
+            total_reward += p
+        return total_reward
     
     def backpropagate(self, reward):
         self.visits += 1
