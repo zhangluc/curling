@@ -11,26 +11,35 @@ posterior = torch.load("/Users/brentkong/Documents/curling/weights/unitddpm_<fun
 
 
 frequency_dict = defaultdict(int)
-for _ in range(1000):
-    result_1 = np.random.choice(list(PROB_TABLE_CUM_DIFF.keys()), p=list(PROB_TABLE_CUM_DIFF.values()))
-    result_2 = np.random.choice(list(PROB_TABLE_CUM_DIFF.keys()), p=list(PROB_TABLE_CUM_DIFF.values()))
+round_count = defaultdict(int)
+for _ in range(10000):
     round = np.random.choice([i for i in range(1, 9)], p = [0.125 for _ in range(8)])
+    round_count[round] += 1 
+    result_1 = np.random.choice(list(PROB_TABLE_CUM_DIFF[round].keys()), p=list(PROB_TABLE_CUM_DIFF[round].values()))
+    result_2 = np.random.choice(list(PROB_TABLE_CUM_DIFF[round].keys()), p=list(PROB_TABLE_CUM_DIFF[round].values()))
+
+    if round == 8:
+        used = True
+    if round == 1:
+        used = False
+
     used = np.random.choice([True, False], p = [0.5, 0.5])
+
     state = GameState(
         current_score = {20: result_1, 22: result_2}, # cumulative
-        end_number = round,
+        end_number = round, # heading into round 8
         root_team = 20,
         hammer_team = 20,
-        powerplay_used = {20: False, 22: used},
-        ev_model = bayesian_eval_continuous
+        powerplay_used = {20: False, 22: used}
     )   
 
-
-
-    mcts = MCTS(bayesian_eval_continuous, 10000)
+    mcts = MCTS(bayesian_eval_continuous, 1000)
     best_action, expected_net_score = mcts.search(state)
     if best_action == "PP":
         frequency_dict[round] += 1
+
+for key in frequency_dict:
+    frequency_dict[key] /= round_count[key]
 
 
 categories = list(frequency_dict.keys())
@@ -41,7 +50,9 @@ plt.bar(categories, frequencies, color='skyblue')
 plt.title('Frequency Plot of Items')
 plt.xlabel('End')
 plt.ylabel('Frequency')
+plt.savefig('/Users/brentkong/Documents/curling/figures/Figure.png')
 plt.show()
+
 
 """
 print("Best Action:", best_action)

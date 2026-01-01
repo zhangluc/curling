@@ -26,17 +26,3 @@ def bayesian_eval_continuous(features, posterior = posterior):
     ev_std = mu_samples.std().item()
     
     return ev_mean, ev_std
-
-
-if __name__ == "__main__":
-    posterior = torch.load("/Users/brentkong/Documents/curling/weights/unitddpm_<function BaysianRegression at 0x10f9e0ae0>_weights.pt")
-
-    features = {
-        "Has_Hammer": 1,
-        "PowerPlay": 1,
-        "EndID": 7,
-        "PrevScoreDiff": -2,
-    }
-
-    ev = bayesian_eval_continuous(features, posterior)
-    print("EV:", ev)

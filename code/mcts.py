@@ -56,8 +56,9 @@ class MCTSNode:
 
         ev_root, _ = ev_model(state.features_for_ev(root))
         ev_opp, _ = ev_model(state.features_for_ev(opp))
-
-        return ev_root - ev_opp
+        
+        weight = math.exp(0.1 * state.end_number)
+        return (ev_root - ev_opp) * weight
         
     
     def backpropagate(self, reward):

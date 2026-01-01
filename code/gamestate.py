@@ -21,7 +21,7 @@ class GameState:
         return self.end_number > self.max_ends 
 
     def legal_actions(self):
-        if self.powerplays_remaining[self.hammer_team] > 0:
+        if self.powerplays_remaining[self.hammer_team] > 0 and self.end_number > 2:
             return ["NO_PP", "PP"]
         return ["NO_PP"]
 
@@ -29,16 +29,20 @@ class GameState:
         opp = [t for t in self.current_score if t != team][0]
         return {
             "HasHammer": int(team == self.hammer_team),
-            "PowerPlay": int(action == "PP") if action else 0,
-            "EndNumber": self.end_number,
-            "ScoreDiff": self.current_score[team] - self.current_score[opp],
+            "PowerPlayBool": int(action == "PP") if action else 0,
+            "EndID": self.end_number,
+            "PrevScoreDiff": self.current_score[team] - self.current_score[opp],
         }
 
-    def sample_end_score(self):
+    def sample_end_score(self, action):
         hammer = self.hammer_team
         opp = [t for t in self.current_score if t != hammer][0]
+        end = self.end_number
+        dist = PROB_TABLE_END_DIFF[action][end]
 
-        result = np.random.choice(list(PROB_TABLE_END_DIFF.keys()), p=list(PROB_TABLE_END_DIFF.values()))
+        outcomes = list(dist.keys())
+        probs = np.array(list(dist.values()), dtype=float)
+        result = np.random.choice(outcomes, p=probs)
 
         if result > 0:
             return {hammer: result, opp: 0}
@@ -51,7 +55,7 @@ class GameState:
         hammer = self.hammer_team
         opp = [t for t in self.current_score.keys() if t != hammer][0]
 
-        score_delta = self.sample_end_score()
+        score_delta = self.sample_end_score(action)
 
         new_score = self.current_score.copy()
         new_score[hammer] += score_delta[hammer]
