@@ -4,7 +4,7 @@ import pyro
 import pyro.distributions as dist
 from pyro.infer import MCMC, NUTS
 
-df = pd.read_csv("/Users/brentkong/Documents/curling/processed_data/ends_processed.csv")
+df = pd.read_csv("/Users/brentkong/Documents/curling/data_processing/ends_processed.csv")
 
 features = ["Has_Hammer",
             "PowerPlayBool",
