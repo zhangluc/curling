@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import json
 
-with open('/Users/brentkong/Documents/curling/figures/simulations/frequency_dict_10000.json', 'r') as f:
+with open('/Users/brentkong/Documents/curling/figures/simulations/frequency_dict_100000.json', 'r') as f:
     data = json.load(f)
 
 frequency_dict = data[0]
