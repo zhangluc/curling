@@ -4,7 +4,7 @@ import pyro
 import pyro.distributions as dist
 from pyro.infer import MCMC, NUTS
 
-df = pd.read_csv("/Users/brentkong/Documents/curling/data_processing/ends_processed.csv")
+df = pd.read_csv("/Users/brentkong/Documents/curling/data_processing/train_test_data/train_df.csv")
 
 features = ["Has_Hammer",
             "PowerPlayBool",
@@ -19,7 +19,9 @@ def OrderedLogistic(X, y=None):
     _, d = X.shape
     w = pyro.sample("w", dist.Normal(0, 1).expand([d]).to_event(1))
     b = pyro.sample("b", dist.Normal(0, 1))
-    cutpoints = pyro.sample("cutpoints", dist.Normal(torch.arange(1.,7.), 1.).to_event(1))
+    num_cutpoints = 6 # scores 0 to 6
+    raw_cutpoints = pyro.sample("raw_cutpoints", dist.Normal(0, 1).expand([num_cutpoints]).to_event(1))
+    cutpoints = torch.cumsum(torch.nn.functional.softplus(raw_cutpoints), dim=0)
     logits = X @ w + b 
     pyro.sample("obs", dist.OrderedLogistic(logits, cutpoints), obs=y)
 
@@ -34,7 +36,7 @@ def BaysianRegression(X, y=None):
 
 
 if __name__ == "__main__":
-    model = BaysianRegression
+    model = OrderedLogistic
     nuts_kernel = NUTS(model)
     mcmc = MCMC(nuts_kernel, num_samples=1000, warmup_steps=200)
     mcmc.run(X, y)
@@ -44,8 +46,5 @@ if __name__ == "__main__":
     print("Posterior b:", posterior["b"].mean())
 
     torch.save(posterior, f"/Users/brentkong/Documents/curling/weights/unitddpm_{model}_weights.pt")
-
-
-# train with CumulativeHammerScore
 
 # python train_bayesian_model.py
