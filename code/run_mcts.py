@@ -7,8 +7,6 @@ import numpy as np
 from copy import deepcopy
 import json
 
-posterior = torch.load("/Users/brentkong/Documents/curling/weights/unitddpm_<function BaysianRegression at 0x10f9e0ae0>_weights.pt")
-
 matches = 10000
 frequency_dict = {end: 0 for end in range(1, 9)}  
 frequency_dict["matches"] = matches

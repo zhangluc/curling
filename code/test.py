@@ -14,25 +14,29 @@ def coverage(y, mu, sigma):
     return ((y >= lower) & (y <= upper)).float().mean()
 
 def test_model(X, y, model):
-    mus, sigmas, ys = [], [], []
+    mus, ys = [], []
 
     for i in range(len(X)):
         x_row = X.iloc[i].to_dict()
-        mu, sigma = model(x_row)
+        mu, _ = model(x_row)
 
         mus.append(mu)
-        sigmas.append(sigma)
         ys.append(y.iloc[i])
 
-    mus = torch.tensor(mus)
-    sigmas = torch.tensor(sigmas)
-    ys = torch.tensor(ys)
+    mus = torch.tensor(mus, dtype = torch.float) 
+    ys = torch.tensor(ys, dtype = torch.float)
+
+    rmse = torch.sqrt(((mus - ys) ** 2).mean()).item()
+    mae = torch.mean(torch.abs(mus - ys)).item()
+    bias = torch.mean(mus - ys).item()
+    r2 = 1 - torch.sum((mus - ys) ** 2) / torch.sum((ys - ys.mean()) ** 2)
+    r2 = r2.item()
 
     return {
-        "RMSE": torch.sqrt(((mus - ys) ** 2).mean()).item(),
-        "NLL": neg_log_likelihood(mus, sigmas, ys).item(),
-        "Coverage95": coverage(ys, mus, sigmas).item(),
-        "Sharpness": sigmas.mean().item(),
+        "RMSE": rmse,
+        "MAE": mae,
+        "Bias": bias,
+        "R2": r2
     }
 
 

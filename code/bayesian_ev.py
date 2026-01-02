@@ -2,10 +2,9 @@ import torch
 import pyro
 import pyro.distributions as dist
 
-posterior_ord = torch.load("/Users/brentkong/Documents/curling/weights/unitddpm_<function OrderedLogistic at 0x120cf09a0>_weights.pt")
-posterior_cont = torch.load("/Users/brentkong/Documents/curling/weights/unitddpm_<function BaysianRegression at 0x10fef0cc0>_weights.pt")
-posterior_cont_production = torch.load("/Users/brentkong/Documents/curling/weights/unitddpm_<function BaysianRegression at 0x12d9e0ae0>_weights.pt")
-
+posterior_ord = torch.load("/Users/brentkong/Documents/curling/weights/testing_weights/unitddpm_<function OrderedLogistic at 0x120cf09a0>_weights.pt")
+posterior_cont = torch.load("/Users/brentkong/Documents/curling/weights/testing_weights/unitddpm_<function BaysianRegression at 0x10fef0cc0>_weights.pt")
+posterior = torch.load("/Users/brentkong/Documents/curling/weights/unitddpm_<function BaysianRegression at 0x12d9e0ae0>_weights.pt")
 
 def bayesian_eval_ordered(features, posterior = posterior_ord):
     f = torch.tensor([list(features.values())], dtype=torch.float)
@@ -21,7 +20,7 @@ def bayesian_eval_ordered(features, posterior = posterior_ord):
     ev_std = ev_per_sample.std().item()
     return ev_mean, ev_std
 
-def bayesian_eval_continuous(features, posterior = posterior_cont):
+def bayesian_eval_continuous(features, posterior = posterior):
     f = torch.tensor([list(features.values())], dtype=torch.float)
     
     mu_samples = f @ posterior["w"].T + posterior["b"] 
