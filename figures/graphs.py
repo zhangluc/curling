@@ -21,7 +21,7 @@ if mode == "frequency":
     plt.title('Frequencies of PowerPlays called per end')
     plt.xlabel('End')
     plt.ylabel('Frequency')
-    plt.savefig('/Users/brentkong/Documents/curling/figures/graphs/Frequency_End.png')
+    plt.savefig(f'/Users/brentkong/Documents/curling/figures/graphs/Frequency_End_{matches}.png')
     plt.show()
 elif mode == "win-draw": 
     win_draw_dict = {}
@@ -36,7 +36,7 @@ elif mode == "win-draw":
     plt.title('Win-Draw Percentage per PowerPlay called at a specific end')
     plt.xlabel('End')
     plt.ylabel('Percentage')
-    plt.savefig('/Users/brentkong/Documents/curling/figures/graphs/Win_Draw_Per_End.png')
+    plt.savefig(f'/Users/brentkong/Documents/curling/figures/graphs/Win_Draw_Per_End_{matches}.png')
     plt.show()
 else:
     hammer_counts = hammer_analysis['hammer_start']
@@ -59,5 +59,5 @@ else:
     plt.title('Root Team Starts without Hammer')
 
     plt.tight_layout()
-    plt.savefig('/Users/brentkong/Documents/curling/figures/graphs/hammer_vs_no_hammer_pie.png')
+    plt.savefig(f'/Users/brentkong/Documents/curling/figures/graphs/hammer_vs_no_hammer_pie_{matches}.png')
     plt.show()

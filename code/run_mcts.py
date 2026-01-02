@@ -7,7 +7,7 @@ import numpy as np
 from copy import deepcopy
 import json
 
-matches = 100000
+matches = 1000
 
 frequency_dict = {end: 0 for end in range(1, 9)}  
 frequency_dict["matches"] = matches

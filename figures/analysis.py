@@ -9,7 +9,7 @@ frequency_dict = data[0]
 wins_dict = data[1]
 loss_dict = data[2]
 draws_dict = data[3]
-frequency_dict.pop("matches")
+matches = frequency_dict.pop("matches")
 pp_matches = sum(frequency_dict.values())
 
 hammer_start = data[4]["hammer_start"]
@@ -37,4 +37,4 @@ df = pd.DataFrame({
 
 df.index = df.index.astype(int)
 
-df.to_csv('/Users/brentkong/Documents/curling/figures/analysis/analysis.csv', index = False)
+df.to_csv(f'/Users/brentkong/Documents/curling/figures/analysis/analysis_{matches}.csv', index = False)
