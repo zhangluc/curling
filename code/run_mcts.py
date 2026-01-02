@@ -8,8 +8,10 @@ from copy import deepcopy
 import json
 
 matches = 10000
+
 frequency_dict = {end: 0 for end in range(1, 9)}  
 frequency_dict["matches"] = matches
+
 wins_dict = {end: 0 for end in range(1, 9)}  
 draws_dict = {end: 0 for end in range(1, 9)} 
 loss_dict = {end: 0 for end in range(1, 9)}  
@@ -23,10 +25,11 @@ for _ in range(matches):
     powerplay_used = {1: False, 2: False}
     current_score = {1: 0, 2: 0}
     powerplays_remaining = {1: 1, 2: 1}
-    powerplay_end = None
+    pp_usage = {1: None, 2: None}
     root_has_hammer = (hammer == 1)
+
     for end in range(1, 9):
-        opp = [t for t in current_score if t != hammer][0]
+        opp = 3 - hammer
         state = GameState(
             current_score = deepcopy(current_score),
             end_number = end, 
@@ -36,12 +39,14 @@ for _ in range(matches):
             powerplays_remaining = deepcopy(powerplays_remaining)
         )   
 
-        mcts = MCTS(bayesian_eval_continuous, 5000)
+        mcts = MCTS(bayesian_eval_continuous, 1000)
         best_action, _ = mcts.search(state)
-
-        if best_action == "PP" and hammer == 1:
+        
+        if best_action == "PP" and powerplays_remaining[hammer] > 0:
+            pp_usage[hammer] = end
             frequency_dict[end] += 1
-            powerplay_end = end
+            powerplay_used[hammer] = True
+            powerplays_remaining[hammer] -= 1
 
         dist = PROB_TABLE_END_DIFF[best_action][end]
         outcomes = list(dist.keys())
@@ -53,12 +58,7 @@ for _ in range(matches):
         elif result < 0:
             current_score[opp] += -result
 
-        if best_action == "PP":
-            powerplay_used[hammer] = True
-            powerplays_remaining[hammer] -= 1
-
         scored = result  
-
         if scored > 0: 
             hammer = 3 - hammer  
         elif scored < 0:  
@@ -66,13 +66,14 @@ for _ in range(matches):
         else:  
             hammer = 3 - hammer  
 
-    if powerplay_end is not None:
-        if current_score[1] > current_score[2]:
-            wins_dict[powerplay_end] += 1
-        elif current_score[1] < current_score[2]:
-            loss_dict[powerplay_end] += 1
-        else:
-            draws_dict[powerplay_end] += 1
+    for team, pp_end in pp_usage.items():
+        if pp_end is not None:
+            if current_score[1] > current_score[2]:
+                wins_dict[pp_end] += 1
+            elif current_score[1] < current_score[2]:
+                loss_dict[pp_end] += 1
+            else:
+                draws_dict[pp_end] += 1
     
     if root_has_hammer:
         if current_score[1] > current_score[2]:

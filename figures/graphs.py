@@ -10,7 +10,7 @@ loss_dict = data[2]
 draws_dict = data[3]
 hammer_analysis = data[4]
 matches = frequency_dict.pop("matches")
-mode = "win-draw"
+mode = "hammer"
 
 if mode == "frequency": 
     categories = list(frequency_dict.keys())

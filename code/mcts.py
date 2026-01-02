@@ -46,6 +46,7 @@ class MCTSNode:
         return child_node
     
     def win_prob(self, ev, ends_left):
+        ends_left = max(ends_left, 1)
         sigma = 1.5 / np.sqrt(ends_left)
         return 1 / (1 + np.exp(-ev / sigma))
 

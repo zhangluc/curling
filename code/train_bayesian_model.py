@@ -4,7 +4,7 @@ import pyro
 import pyro.distributions as dist
 from pyro.infer import MCMC, NUTS
 
-df = pd.read_csv("/Users/brentkong/Documents/curling/data_processing/train_test_data/train_df.csv")
+df = pd.read_csv("/Users/brentkong/Documents/curling/data_processing/processed_data/bayesian_training.csv")
 
 features = ["Has_Hammer",
             "PowerPlayBool",
@@ -36,7 +36,7 @@ def BaysianRegression(X, y=None):
 
 
 if __name__ == "__main__":
-    model = OrderedLogistic
+    model = BaysianRegression
     nuts_kernel = NUTS(model)
     mcmc = MCMC(nuts_kernel, num_samples=1000, warmup_steps=200)
     mcmc.run(X, y)
