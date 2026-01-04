@@ -95,7 +95,7 @@ hammer_analysis = {
     "no_hammer_start": {"wins": wins_no_hammer, "draws": draws_no_hammer, "losses": loss_no_hammer, "matches": sum([wins_no_hammer, draws_no_hammer, loss_no_hammer])}
 }
 
-with open(f'/Users/brentkong/Documents/curling/figures/simulations/frequency_dict_{matches}.json', 'w') as f:
+with open(f'/Users/brentkong/Documents/curling/figures/simulations/frequency_dict_{matches}_new.json', 'w') as f:
     json.dump([frequency_dict, wins_dict, loss_dict, draws_dict, hammer_analysis], f, indent=4) 
 
 

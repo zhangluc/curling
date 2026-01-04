@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import json
 
-with open('/Users/brentkong/Documents/curling/figures/simulations/frequency_dict_100000.json', 'r') as f:
+with open('/Users/brentkong/Documents/curling/figures/simulations/frequency_dict_1000_new.json', 'r') as f:
     data = json.load(f)
 
 frequency_dict = data[0]
@@ -21,7 +21,7 @@ if mode == "frequency":
     plt.title('Frequencies of PowerPlays called per end')
     plt.xlabel('End')
     plt.ylabel('Frequency')
-    plt.savefig(f'/Users/brentkong/Documents/curling/figures/graphs/Frequency_End_{matches}.png')
+    plt.savefig(f'/Users/brentkong/Documents/curling/figures/graphs/Frequency_End_{matches}_new.png')
     plt.show()
 elif mode == "win-draw": 
     win_draw_dict = {}
@@ -36,7 +36,7 @@ elif mode == "win-draw":
     plt.title('Win-Draw Percentage per PowerPlay called at a specific end')
     plt.xlabel('End')
     plt.ylabel('Percentage')
-    plt.savefig(f'/Users/brentkong/Documents/curling/figures/graphs/Win_Draw_Per_End_{matches}.png')
+    plt.savefig(f'/Users/brentkong/Documents/curling/figures/graphs/Win_Draw_Per_End_{matches}_new.png')
     plt.show()
 else:
     hammer_counts = hammer_analysis['hammer_start']
@@ -59,5 +59,5 @@ else:
     plt.title('Root Team Starts without Hammer')
 
     plt.tight_layout()
-    plt.savefig(f'/Users/brentkong/Documents/curling/figures/graphs/hammer_vs_no_hammer_pie_{matches}.png')
+    plt.savefig(f'/Users/brentkong/Documents/curling/figures/graphs/hammer_vs_no_hammer_pie_{matches}_new.png')
     plt.show()

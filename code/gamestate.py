@@ -2,13 +2,14 @@ import numpy as np
 from prob_table import PROB_TABLE_END_DIFF
 
 class GameState:
-    def __init__(self, current_score, end_number, root_team, hammer_team, powerplay_used, max_ends=8, powerplays_remaining = None):
+    def __init__(self, current_score, end_number, root_team, hammer_team, powerplay_used, max_ends=8, powerplays_remaining = None, prev_end_diff=0):
         self.current_score = current_score  # dict: {team1: score1, team2: score2}
         self.end_number = end_number
         self.root_team = root_team
         self.hammer_team = hammer_team      # team_id that has hammer this end
         self.powerplay_used = powerplay_used  # dict: {team1: bool, team2: bool}
         self.max_ends = max_ends
+        self.prev_end_diff = prev_end_diff
 
         if powerplays_remaining is None:
             self.powerplays_remaining = {
@@ -32,6 +33,7 @@ class GameState:
             "PowerPlayBool": int(action == "PP") if action else 0,
             "EndID": self.end_number,
             "PrevScoreDiff": self.current_score[team] - self.current_score[opp],
+            "PrevEndDiff": self.prev_end_diff
         }
 
     def sample_end_score(self, action):
@@ -61,6 +63,8 @@ class GameState:
         new_score[hammer] += score_delta[hammer]
         new_score[opp] += score_delta[opp]
 
+        end_diff = score_delta[self.root_team] - score_delta[opp]
+
         if score_delta[hammer] > 0:
             next_hammer = opp
         else:
@@ -80,7 +84,8 @@ class GameState:
             hammer_team=next_hammer,       
             powerplay_used=new_pp_used,
             powerplays_remaining = new_pp_remaining,
-            max_ends=self.max_ends
+            max_ends=self.max_ends,
+            prev_end_diff=end_diff
         )
     
     

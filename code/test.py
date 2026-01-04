@@ -41,7 +41,7 @@ def test_model(X, y, model):
 
 
 if __name__ == "__main__":
-    features = ["Has_Hammer", "PowerPlayBool", "EndID", "PrevScoreDiff"]
+    features = ["Has_Hammer", "PowerPlayBool", "EndID", "PrevScoreDiff", "PrevEndDiff"]
 
     test_df = pd.read_csv(
         "/Users/brentkong/Documents/curling/data_processing/train_test_data/test_df.csv"
