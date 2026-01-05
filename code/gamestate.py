@@ -28,17 +28,21 @@ class GameState:
 
     def features_for_ev(self, team, action = None):
         opp = [t for t in self.current_score if t != team][0]
+        if team == self.root_team:
+            prev_end_diff_team = self.prev_end_diff
+        else:
+            prev_end_diff_team = -self.prev_end_diff
         return {
             "HasHammer": int(team == self.hammer_team),
             "PowerPlayBool": int(action == "PP") if action else 0,
             "EndID": self.end_number,
             "PrevScoreDiff": self.current_score[team] - self.current_score[opp],
-            "PrevEndDiff": self.prev_end_diff
+            "PrevEndDiff": prev_end_diff_team
         }
 
     def sample_end_score(self, action):
         hammer = self.hammer_team
-        opp = [t for t in self.current_score if t != hammer][0]
+        no_hammer = [t for t in self.current_score if t != hammer][0]
         end = self.end_number
         dist = PROB_TABLE_END_DIFF[action][end]
 
@@ -47,28 +51,32 @@ class GameState:
         result = np.random.choice(outcomes, p=probs)
 
         if result > 0:
-            return {hammer: result, opp: 0}
+            return {hammer: result, no_hammer: 0}
         elif result < 0:
-            return {hammer: 0, opp: -result}
+            return {hammer: 0, no_hammer: -result}
         else:
-            return {hammer: 0, opp: 0}
+            return {hammer: 0, no_hammer: 0}
 
     def next_state(self, action):
         hammer = self.hammer_team
-        opp = [t for t in self.current_score.keys() if t != hammer][0]
+        no_hammer = [t for t in self.current_score if t != hammer][0]
+        root = self.root_team
+        opp = [t for t in self.current_score if t != root][0]
 
         score_delta = self.sample_end_score(action)
 
         new_score = self.current_score.copy()
-        new_score[hammer] += score_delta[hammer]
-        new_score[opp] += score_delta[opp]
+        for t in new_score:
+            new_score[t] += score_delta[t]
 
-        end_diff = score_delta[self.root_team] - score_delta[opp]
+        end_diff = score_delta[root] - score_delta[opp]
 
         if score_delta[hammer] > 0:
-            next_hammer = opp
-        else:
+            next_hammer = no_hammer
+        elif score_delta[no_hammer] > 0:
             next_hammer = hammer
+        else:
+            next_hammer = no_hammer
         
         new_pp_used = self.powerplay_used.copy()
         new_pp_remaining = self.powerplays_remaining.copy()

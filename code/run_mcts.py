@@ -7,7 +7,7 @@ import numpy as np
 from copy import deepcopy
 import json
 
-matches = 1000
+matches = 100000
 
 frequency_dict = {end: 0 for end in range(1, 9)}  
 frequency_dict["matches"] = matches
@@ -16,9 +16,8 @@ wins_dict = {end: 0 for end in range(1, 9)}
 draws_dict = {end: 0 for end in range(1, 9)} 
 loss_dict = {end: 0 for end in range(1, 9)}  
 
-wins_hammer, wins_no_hammer = 0, 0
-draws_hammer, draws_no_hammer = 0, 0
-loss_hammer, loss_no_hammer  = 0, 0
+hammer_track = {"wins": 0, "draws": 0, "loss": 0}
+no_hammer_track = {"wins": 0, "draws": 0, "loss": 0}
 
 for _ in range(matches):
     hammer = np.random.choice([1, 2])
@@ -26,7 +25,7 @@ for _ in range(matches):
     current_score = {1: 0, 2: 0}
     powerplays_remaining = {1: 1, 2: 1}
     pp_usage = {1: None, 2: None}
-    root_has_hammer = (hammer == 1)
+    start_hammer = hammer
 
     for end in range(1, 9):
         opp = 3 - hammer
@@ -75,24 +74,21 @@ for _ in range(matches):
             else:
                 draws_dict[pp_end] += 1
     
-    if root_has_hammer:
-        if current_score[1] > current_score[2]:
-            wins_hammer += 1
-        elif current_score[1] < current_score[2]:
-            loss_hammer += 1
-        else:
-            draws_hammer += 1
+    
+    if current_score[start_hammer] > current_score[3 - start_hammer]:
+        hammer_track["wins"] += 1
+        no_hammer_track["loss"] += 1
+    elif current_score[start_hammer] < current_score[3 - start_hammer]:
+        hammer_track["loss"] += 1
+        no_hammer_track["wins"] += 1
     else:
-        if current_score[1] > current_score[2]:
-            wins_no_hammer += 1
-        elif current_score[1] < current_score[2]:
-            loss_no_hammer += 1
-        else:
-            draws_no_hammer += 1
+        hammer_track["draws"] += 1
+        no_hammer_track["draws"] += 1
+    
 
 hammer_analysis = {
-    "hammer_start": {"wins": wins_hammer, "draws": draws_hammer, "losses": loss_hammer, "matches": sum([wins_hammer, draws_hammer, loss_hammer])},
-    "no_hammer_start": {"wins": wins_no_hammer, "draws": draws_no_hammer, "losses": loss_no_hammer, "matches": sum([wins_no_hammer, draws_no_hammer, loss_no_hammer])}
+    "hammer_start": hammer_track,
+    "no_hammer_start": no_hammer_track
 }
 
 with open(f'/Users/brentkong/Documents/curling/figures/simulations/frequency_dict_{matches}_new.json', 'w') as f:
