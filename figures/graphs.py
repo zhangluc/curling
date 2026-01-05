@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import json
 
-with open('/Users/brentkong/Documents/curling/figures/simulations/frequency_dict_100000.json', 'r') as f:
+with open('/Users/brentkong/Documents/curling/figures/simulations/frequency_dict_100000_new.json', 'r') as f:
     data = json.load(f)
 
 frequency_dict = data[0]
@@ -10,7 +10,7 @@ loss_dict = data[2]
 draws_dict = data[3]
 hammer_analysis = data[4]
 matches = frequency_dict.pop("matches")
-mode = "win-draw"
+mode = "hammer"
 
 if mode == "frequency": 
     categories = list(frequency_dict.keys())
@@ -44,8 +44,8 @@ else:
 
     labels = ['Wins', 'Draws', 'Losses']
 
-    hammer_values = [hammer_counts['wins'], hammer_counts['draws'], hammer_counts['losses']]
-    no_hammer_values = [no_hammer_counts['wins'], no_hammer_counts['draws'], no_hammer_counts['losses']]
+    hammer_values = [hammer_counts['wins'], hammer_counts['draws'], hammer_counts['loss']]
+    no_hammer_values = [no_hammer_counts['wins'], no_hammer_counts['draws'], no_hammer_counts['loss']]
     colors = ['#8dd3c7', '#ffffb3', '#fb8072']
 
     plt.figure(figsize=(12, 6))

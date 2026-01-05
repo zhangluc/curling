@@ -2,7 +2,7 @@ import pandas as pd
 import json
 
 
-with open('/Users/brentkong/Documents/curling/figures/simulations/frequency_dict_100000.json', 'r') as f:
+with open('/Users/brentkong/Documents/curling/figures/simulations/frequency_dict_100000_new.json', 'r') as f:
     data = json.load(f)
 
 frequency_dict = data[0]
@@ -11,11 +11,6 @@ loss_dict = data[2]
 draws_dict = data[3]
 matches = frequency_dict.pop("matches")
 pp_matches = sum(frequency_dict.values())
-
-hammer_start = data[4]["hammer_start"]
-hammer_no_start = data[4]["no_hammer_start"]
-hammer_start_matches = hammer_start.pop("matches")
-hammer_no_start_matches = hammer_no_start.pop("matches")
 
 frequency_percent_dict, win_percent_dict, draw_percent_dict, loss_percent_dict, win_draw_dict = ({} for _ in range(5))
 for key, value in frequency_dict.items():
