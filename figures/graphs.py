@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import json
 
-with open('/Users/brentkong/Documents/curling/figures/simulations/frequency_dict_100000.json', 'r') as f:
+with open('/Users/brentkong/Documents/curling/figures/simulations/frequency_dict_100000_new.json', 'r') as f:
     data = json.load(f)
 
 frequency_dict = data[0]
@@ -9,10 +9,12 @@ wins_dict = data[1]
 loss_dict = data[2]
 draws_dict = data[3]
 hammer_analysis = data[4]
-hammer_summary = data[5]
-by_margin_raw = data[6]["by_margin"]
+hammer_summary_6 = data[5]
+by_margin_raw_6 = data[6]["by_margin"]
+hammer_summary_7 = data[7]
+by_margin_raw_7 = data[8]["by_margin"]
 matches = frequency_dict.pop("matches")
-mode = "win"
+mode = "percent_7"
 
 if mode == "frequency": 
     categories = list(frequency_dict.keys())
@@ -78,8 +80,8 @@ elif mode == "hammer":
     plt.tight_layout()
     plt.savefig(f'/Users/brentkong/Documents/curling/figures/graphs/hammer_vs_no_hammer_pie_{matches}.png')
     plt.show()
-elif mode == "by_end":
-    by_margin = {int(k): int(v) for k, v in by_margin_raw.items()}
+elif mode == "by_end_6":
+    by_margin = {int(k): int(v) for k, v in by_margin_raw_6.items()}
 
     margins = []
     for margin, count in by_margin.items():
@@ -91,31 +93,70 @@ elif mode == "by_end":
         bins=range(min(margins), max(margins) + 2),
         align="left"
     )
-    plt.xlabel("Score margin after 7 ends (hammer team)")
+    plt.xlabel("Score margin after 5 ends (hammer team)")
     plt.ylabel("Frequency")
-    plt.title("Histogram of Score Margin After 7 Ends (Hammer Team)")
+    plt.title("Histogram of Score Margin After 5 Ends (Hammer Team)")
     plt.tight_layout()
-    plt.savefig(f'/Users/brentkong/Documents/curling/figures/graphs/score_margin_{matches}.png')
+    plt.savefig(f'/Users/brentkong/Documents/curling/figures/graphs/score_margin_6_{matches}.png')
     plt.show()
 
-else:
+elif mode == "percent_6":
     labels = [
-        "Leading after 7",
-        "Tied after 7",
-        "Trailing after 7"
+        "Leading after 5",
+        "Tied after 5",
+        "Trailing after 5"
     ]
     sizes = [
-        hammer_summary["hammer_leading_after_7"],
-        hammer_summary["hammer_tied_after_7"],
-        hammer_summary["hammer_trailing_after_7"]
+        hammer_summary_6["hammer_leading_after_5"],
+        hammer_summary_6["hammer_tied_after_5"],
+        hammer_summary_6["hammer_trailing_after_5"]
     ]
 
     plt.figure()
     plt.pie(sizes, labels=labels, autopct='%1.1f%%', startangle=90)
-    plt.title("End 8 Hammer Team Status After 7 Ends")
+    plt.title("End 6 Hammer Team Status After 5 Ends")
     plt.axis("equal") 
     plt.tight_layout()
-    plt.savefig(f'/Users/brentkong/Documents/curling/figures/graphs/win_after_7_{matches}.png')
+    plt.savefig(f'/Users/brentkong/Documents/curling/figures/graphs/win_after_5_{matches}.png')
+    plt.show()
+elif mode == "by_end_7":
+    by_margin = {int(k): int(v) for k, v in by_margin_raw_7.items()}
+
+    margins = []
+    for margin, count in by_margin.items():
+        margins.extend([margin] * count)
+
+    plt.figure()
+    plt.hist(
+        margins,
+        bins=range(min(margins), max(margins) + 2),
+        align="left"
+    )
+    plt.xlabel("Score margin after 6 ends (hammer team)")
+    plt.ylabel("Frequency")
+    plt.title("Histogram of Score Margin After 6 Ends (Hammer Team)")
+    plt.tight_layout()
+    plt.savefig(f'/Users/brentkong/Documents/curling/figures/graphs/score_margin_7_{matches}.png')
+    plt.show()
+
+elif mode == "percent_7":
+    labels = [
+        "Leading after 6",
+        "Tied after 6",
+        "Trailing after 6"
+    ]
+    sizes = [
+        hammer_summary_7["hammer_leading_after_6"],
+        hammer_summary_7["hammer_tied_after_6"],
+        hammer_summary_7["hammer_trailing_after_6"]
+    ]
+
+    plt.figure()
+    plt.pie(sizes, labels=labels, autopct='%1.1f%%', startangle=90)
+    plt.title("End 7 Hammer Team Status After 6 Ends")
+    plt.axis("equal") 
+    plt.tight_layout()
+    plt.savefig(f'/Users/brentkong/Documents/curling/figures/graphs/win_after_6_{matches}.png')
     plt.show()
 
 
