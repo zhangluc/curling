@@ -19,6 +19,18 @@ loss_dict = {end: 0 for end in range(1, 9)}
 hammer_track = {"wins": 0, "draws": 0, "loss": 0}
 no_hammer_track = {"wins": 0, "draws": 0, "loss": 0}
 
+pp8_lead_check = {
+    "pp8_total": 0,
+    "hammer_leading_after_7": 0,
+    "hammer_tied_after_7": 0,
+    "hammer_trailing_after_7": 0
+}
+
+pp8_lead_margin = {
+    "total": 0,
+    "by_margin": {} 
+}
+
 for _ in range(matches):
     hammer = np.random.choice([1, 2])
     powerplay_used = {1: False, 2: False}
@@ -26,13 +38,13 @@ for _ in range(matches):
     powerplays_remaining = {1: 1, 2: 1}
     pp_usage = {1: None, 2: None}
     start_hammer = hammer
+    root_team = 1
 
     for end in range(1, 9):
-        opp = 3 - hammer
         state = GameState(
             current_score = deepcopy(current_score),
             end_number = end, 
-            root_team = 1,
+            root_team = root_team,
             hammer_team = hammer,
             powerplay_used = deepcopy(powerplay_used),
             powerplays_remaining = deepcopy(powerplays_remaining)
@@ -41,40 +53,58 @@ for _ in range(matches):
         mcts = MCTS(bayesian_eval_continuous, 1000)
         best_action, _ = mcts.search(state)
         
-        if best_action == "PP" and powerplays_remaining[hammer] > 0:
-            pp_usage[hammer] = end
+        if best_action == "PP" and powerplays_remaining[root_team] > 0:
+            if end == 8:
+                pp8_lead_check["pp8_total"] += 1
+
+                lead = int(current_score[root_team] - current_score[3 - root_team])
+
+                if lead > 0:
+                    pp8_lead_check["hammer_leading_after_7"] += 1
+                elif lead < 0:
+                    pp8_lead_check["hammer_trailing_after_7"] += 1
+                else:
+                    pp8_lead_check["hammer_tied_after_7"] += 1
+
+                pp8_lead_margin["total"] += 1
+                pp8_lead_margin["by_margin"][lead] = (
+                    pp8_lead_margin["by_margin"].get(lead, 0) + 1
+                )
+
+            pp_usage[root_team] = end
             frequency_dict[end] += 1
-            powerplay_used[hammer] = True
-            powerplays_remaining[hammer] -= 1
+            powerplay_used[root_team] = True
+            powerplays_remaining[root_team] -= 1
 
         dist = PROB_TABLE_END_DIFF[best_action][end]
         outcomes = list(dist.keys())
         probs = np.array(list(dist.values()), dtype=float)
         result = np.random.choice(outcomes, p=probs)        
 
-        if result > 0:
-            current_score[hammer] += result
-        elif result < 0:
-            current_score[opp] += -result
+        opp_team = 3 - root_team
 
-        scored = result  
-        if scored > 0: 
+        if result > 0:
+            current_score[root_team] += result
+        elif result < 0:
+            current_score[opp_team] += -result
+ 
+        if result  > 0: 
             hammer = 3 - hammer  
-        elif scored < 0:  
+        elif result < 0:  
             hammer = hammer  
         else:  
             hammer = 3 - hammer  
 
-    for team, pp_end in pp_usage.items():
-        if pp_end is not None:
-            if current_score[1] > current_score[2]:
-                wins_dict[pp_end] += 1
-            elif current_score[1] < current_score[2]:
-                loss_dict[pp_end] += 1
-            else:
-                draws_dict[pp_end] += 1
-    
-    
+    pp_end = pp_usage[root_team]
+    if pp_end is not None:
+        if current_score[root_team] > current_score[3 - root_team]:
+            wins_dict[pp_end] += 1
+        elif current_score[root_team] < current_score[3 - root_team]:
+            loss_dict[pp_end] += 1
+        else:
+            draws_dict[pp_end] += 1
+
+
     if current_score[start_hammer] > current_score[3 - start_hammer]:
         hammer_track["wins"] += 1
         no_hammer_track["loss"] += 1
@@ -91,8 +121,8 @@ hammer_analysis = {
     "no_hammer_start": no_hammer_track
 }
 
-with open(f'/Users/brentkong/Documents/curling/figures/simulations/frequency_dict_{matches}_new.json', 'w') as f:
-    json.dump([frequency_dict, wins_dict, loss_dict, draws_dict, hammer_analysis], f, indent=4) 
+with open(f'/Users/brentkong/Documents/curling/figures/simulations/frequency_dict_{matches}.json', 'w') as f:
+    json.dump([frequency_dict, wins_dict, loss_dict, draws_dict, hammer_analysis, pp8_lead_check, pp8_lead_margin], f, indent=4) 
 
 
 
