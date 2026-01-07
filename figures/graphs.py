@@ -1,7 +1,10 @@
 import matplotlib.pyplot as plt
+import numpy as np
+from scipy.stats import gaussian_kde
+from scipy.ndimage import gaussian_filter1d
 import json
 
-with open('/Users/brentkong/Documents/curling/figures/simulations/frequency_dict_100000_both.json', 'r') as f:
+with open('/Users/brentkong/Documents/curling/figures/simulations/frequency_dict_100000_new.json', 'r') as f:
     data = json.load(f)
 
 frequency_dict = data[0]
@@ -14,7 +17,7 @@ by_margin_raw_6 = data[6]["by_margin"]
 hammer_summary_7 = data[7]
 by_margin_raw_7 = data[8]["by_margin"]
 matches = frequency_dict.pop("matches")
-mode = "percent_6"
+mode = "percent_7"
 
 if mode == "frequency": 
     categories = list(frequency_dict.keys())
@@ -80,6 +83,7 @@ elif mode == "hammer":
     plt.tight_layout()
     plt.savefig(f'/Users/brentkong/Documents/curling/figures/graphs/hammer_vs_no_hammer_pie_{matches}.png')
     plt.show()
+
 elif mode == "by_end_6":
     by_margin = {int(k): int(v) for k, v in by_margin_raw_6.items()}
 
@@ -87,18 +91,40 @@ elif mode == "by_end_6":
     for margin, count in by_margin.items():
         margins.extend([margin] * count)
 
-    plt.figure()
-    plt.hist(
+    margins = np.array(margins)
+
+    counts, bin_edges = np.histogram(
         margins,
-        bins=range(min(margins), max(margins) + 2),
-        align="left"
+        bins=range(min(margins), max(margins) + 2)
     )
+
+    smoothed = gaussian_filter1d(counts, sigma=1.0)
+
+    plt.figure()
+    plt.bar(
+        bin_edges[:-1],
+        counts,
+        width=1,
+        align="edge",
+        alpha=0.6,
+        label="Histogram"
+    )
+
+    plt.plot(
+        bin_edges[:-1] + 0.5,
+        smoothed,
+        linewidth=2,
+        label="Smoothed curve"
+    )
+
     plt.xlabel("Score margin after 5 ends (hammer team)")
     plt.ylabel("Frequency")
-    plt.title("Histogram of Score Margin After 5 Ends (Hammer Team)")
+    plt.title("Score Margin After 5 Ends (Hammer Team)")
+    plt.legend()
     plt.tight_layout()
     plt.savefig(f'/Users/brentkong/Documents/curling/figures/graphs/score_margin_6_{matches}.png')
     plt.show()
+
 
 elif mode == "percent_6":
     labels = [
@@ -126,15 +152,36 @@ elif mode == "by_end_7":
     for margin, count in by_margin.items():
         margins.extend([margin] * count)
 
-    plt.figure()
-    plt.hist(
+    margins = np.array(margins)
+
+    counts, bin_edges = np.histogram(
         margins,
-        bins=range(min(margins), max(margins) + 2),
-        align="left"
+        bins=range(min(margins), max(margins) + 2)
     )
+
+    smoothed = gaussian_filter1d(counts, sigma=1.0)
+
+    plt.figure()
+    plt.bar(
+        bin_edges[:-1],
+        counts,
+        width=1,
+        align="edge",
+        alpha=0.6,
+        label="Histogram"
+    )
+
+    plt.plot(
+        bin_edges[:-1] + 0.5,
+        smoothed,
+        linewidth=2,
+        label="Smoothed curve"
+    )
+
     plt.xlabel("Score margin after 6 ends (hammer team)")
     plt.ylabel("Frequency")
-    plt.title("Histogram of Score Margin After 6 Ends (Hammer Team)")
+    plt.title("Score Margin After 6 Ends (Hammer Team)")
+    plt.legend()
     plt.tight_layout()
     plt.savefig(f'/Users/brentkong/Documents/curling/figures/graphs/score_margin_7_{matches}.png')
     plt.show()

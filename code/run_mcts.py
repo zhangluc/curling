@@ -51,14 +51,13 @@ for _ in range(matches):
     powerplays_remaining = {1: 1, 2: 1}
     pp_usage = {1: None, 2: None}
     start_hammer = hammer
+    root_team = 1
 
     for end in range(1, 9):
-        acting_team = hammer
-
         state = GameState(
             current_score = deepcopy(current_score),
             end_number = end, 
-            root_team = acting_team,
+            root_team = root_team,
             hammer_team = hammer,
             powerplay_used = deepcopy(powerplay_used),
             powerplays_remaining = deepcopy(powerplays_remaining)
@@ -67,10 +66,12 @@ for _ in range(matches):
         mcts = MCTS(bayesian_eval_continuous, 1000)
         best_action, _ = mcts.search(state)
         
-        if best_action == "PP" and powerplays_remaining[acting_team] > 0:
-            lead = int(current_score[hammer] - current_score[3 - hammer])
+        if best_action == "PP" and powerplays_remaining[root_team] > 0:
             if end == 6:
                 pp5_lead_check["pp6_total"] += 1
+
+                lead = int(current_score[root_team] - current_score[3 - root_team])
+
                 if lead > 0:
                     pp5_lead_check["hammer_leading_after_5"] += 1
                 elif lead < 0:
@@ -79,10 +80,15 @@ for _ in range(matches):
                     pp5_lead_check["hammer_tied_after_5"] += 1
 
                 pp5_lead_margin["total"] += 1
-                pp5_lead_margin["by_margin"][lead] = pp5_lead_margin["by_margin"].get(lead, 0) + 1     
+                pp5_lead_margin["by_margin"][lead] = (
+                    pp5_lead_margin["by_margin"].get(lead, 0) + 1
+                )
 
             if end == 7:
                 pp6_lead_check["pp7_total"] += 1
+
+                lead = int(current_score[root_team] - current_score[3 - root_team])
+
                 if lead > 0:
                     pp6_lead_check["hammer_leading_after_6"] += 1
                 elif lead < 0:
@@ -91,24 +97,26 @@ for _ in range(matches):
                     pp6_lead_check["hammer_tied_after_6"] += 1
 
                 pp6_lead_margin["total"] += 1
-                pp6_lead_margin["by_margin"][lead] = pp6_lead_margin["by_margin"].get(lead, 0) + 1
-                
+                pp6_lead_margin["by_margin"][lead] = (
+                    pp6_lead_margin["by_margin"].get(lead, 0) + 1
+                )
 
-            pp_usage[acting_team] = end
+            pp_usage[root_team] = end
             frequency_dict[end] += 1
-            powerplay_used[acting_team] = True
-            powerplays_remaining[acting_team] -= 1
+            powerplay_used[root_team] = True
+            powerplays_remaining[root_team] -= 1
 
-        
         dist = PROB_TABLE_END_DIFF[best_action][end]
         outcomes = list(dist.keys())
         probs = np.array(list(dist.values()), dtype=float)
         result = np.random.choice(outcomes, p=probs)        
 
+        opp_team = 3 - root_team
+
         if result > 0:
-            current_score[hammer] += result
+            current_score[root_team] += result
         elif result < 0:
-            current_score[3 - hammer] += -result
+            current_score[opp_team] += -result
  
         if result  > 0: 
             hammer = 3 - hammer  
@@ -117,14 +125,11 @@ for _ in range(matches):
         else:  
             hammer = 3 - hammer  
 
-    for team in [1, 2]:
-        pp_end = pp_usage[team]
-        if pp_end is None:
-            continue
-        opp = 3 - team
-        if current_score[team] > current_score[opp]:
+    pp_end = pp_usage[root_team]
+    if pp_end is not None:
+        if current_score[root_team] > current_score[3 - root_team]:
             wins_dict[pp_end] += 1
-        elif current_score[team] < current_score[opp]:
+        elif current_score[root_team] < current_score[3 - root_team]:
             loss_dict[pp_end] += 1
         else:
             draws_dict[pp_end] += 1
@@ -146,9 +151,8 @@ hammer_analysis = {
     "no_hammer_start": no_hammer_track
 }
 
-with open(f'/Users/brentkong/Documents/curling/figures/simulations/frequency_dict_{matches}_both.json', 'w') as f:
+with open(f'/Users/brentkong/Documents/curling/figures/simulations/frequency_dict_{matches}_new.json', 'w') as f:
     json.dump([frequency_dict, wins_dict, loss_dict, draws_dict, hammer_analysis, pp5_lead_check, pp5_lead_margin, pp6_lead_check, pp6_lead_margin], f, indent=4) 
-
 
 
 
