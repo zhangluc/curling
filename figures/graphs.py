@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import json
 
-with open('/Users/brentkong/Documents/curling/figures/simulations/frequency_dict_100000_new.json', 'r') as f:
+with open('/Users/brentkong/Documents/curling/figures/simulations/frequency_dict_100000_both.json', 'r') as f:
     data = json.load(f)
 
 frequency_dict = data[0]
@@ -14,7 +14,7 @@ by_margin_raw_6 = data[6]["by_margin"]
 hammer_summary_7 = data[7]
 by_margin_raw_7 = data[8]["by_margin"]
 matches = frequency_dict.pop("matches")
-mode = "percent_7"
+mode = "percent_6"
 
 if mode == "frequency": 
     categories = list(frequency_dict.keys())
