@@ -4,7 +4,7 @@ from scipy.stats import gaussian_kde
 from scipy.ndimage import gaussian_filter1d
 import json
 
-with open('/Users/brentkong/Documents/curling/figures/simulations/frequency_dict_100000_new.json', 'r') as f:
+with open('/Users/brentkong/Documents/curling/figures/simulations/frequency_dict_10000.json', 'r') as f:
     data = json.load(f)
 
 frequency_dict = data[0]
@@ -19,7 +19,7 @@ by_margin_raw_7 = data[8]["by_margin"]
 hammer_summary_8 = data[9]
 by_margin_raw_8 = data[10]["by_margin"]
 matches = frequency_dict.pop("matches")
-mode = "percent_7"
+mode = "percent_8"
 
 if mode == "frequency": 
     categories = list(frequency_dict.keys())
@@ -135,9 +135,9 @@ elif mode == "percent_6":
         "Trailing after 5"
     ]
     sizes = [
-        hammer_summary_6["hammer_leading_after_5"],
-        hammer_summary_6["hammer_tied_after_5"],
-        hammer_summary_6["hammer_trailing_after_5"]
+        hammer_summary_6["caller_leading_after_5"],
+        hammer_summary_6["caller_tied_after_5"],
+        hammer_summary_6["caller_trailing_after_5"]
     ]
 
     plt.figure()
@@ -195,9 +195,9 @@ elif mode == "percent_7":
         "Trailing after 6"
     ]
     sizes = [
-        hammer_summary_7["hammer_leading_after_6"],
-        hammer_summary_7["hammer_tied_after_6"],
-        hammer_summary_7["hammer_trailing_after_6"]
+        hammer_summary_7["caller_leading_after_6"],
+        hammer_summary_7["caller_tied_after_6"],
+        hammer_summary_7["caller_trailing_after_6"]
     ]
 
     plt.figure()
@@ -256,9 +256,9 @@ elif mode == "percent_8":
         "Trailing after 7"
     ]
     sizes = [
-        hammer_summary_7["hammer_leading_after_7"],
-        hammer_summary_7["hammer_tied_after_7"],
-        hammer_summary_7["hammer_trailing_after_7"]
+        hammer_summary_8["caller_leading_after_7"],
+        hammer_summary_8["caller_tied_after_7"],
+        hammer_summary_8["caller_trailing_after_7"]
     ]
 
     plt.figure()
