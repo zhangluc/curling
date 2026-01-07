@@ -16,6 +16,8 @@ hammer_summary_6 = data[5]
 by_margin_raw_6 = data[6]["by_margin"]
 hammer_summary_7 = data[7]
 by_margin_raw_7 = data[8]["by_margin"]
+hammer_summary_8 = data[9]
+by_margin_raw_8 = data[10]["by_margin"]
 matches = frequency_dict.pop("matches")
 mode = "percent_7"
 
@@ -206,6 +208,66 @@ elif mode == "percent_7":
     plt.savefig(f'/Users/brentkong/Documents/curling/figures/graphs/win_after_6_{matches}.png')
     plt.show()
 
+elif mode == "by_end_8":
+    by_margin = {int(k): int(v) for k, v in by_margin_raw_8.items()}
+
+    margins = []
+    for margin, count in by_margin.items():
+        margins.extend([margin] * count)
+
+    margins = np.array(margins)
+
+    counts, bin_edges = np.histogram(
+        margins,
+        bins=range(min(margins), max(margins) + 2)
+    )
+
+    smoothed = gaussian_filter1d(counts, sigma=1.0)
+
+    plt.figure()
+    plt.bar(
+        bin_edges[:-1],
+        counts,
+        width=1,
+        align="edge",
+        alpha=0.6,
+        label="Histogram"
+    )
+
+    plt.plot(
+        bin_edges[:-1] + 0.5,
+        smoothed,
+        linewidth=2,
+        label="Smoothed curve"
+    )
+
+    plt.xlabel("Score margin after 7 ends (hammer team)")
+    plt.ylabel("Frequency")
+    plt.title("Score Margin After 7 Ends (Hammer Team)")
+    plt.legend()
+    plt.tight_layout()
+    plt.savefig(f'/Users/brentkong/Documents/curling/figures/graphs/score_margin_8_{matches}.png')
+    plt.show()
+
+elif mode == "percent_8":
+    labels = [
+        "Leading after 7",
+        "Tied after 7",
+        "Trailing after 7"
+    ]
+    sizes = [
+        hammer_summary_7["hammer_leading_after_7"],
+        hammer_summary_7["hammer_tied_after_7"],
+        hammer_summary_7["hammer_trailing_after_7"]
+    ]
+
+    plt.figure()
+    plt.pie(sizes, labels=labels, autopct='%1.1f%%', startangle=90)
+    plt.title("End 8 Hammer Team Status After 7 Ends")
+    plt.axis("equal") 
+    plt.tight_layout()
+    plt.savefig(f'/Users/brentkong/Documents/curling/figures/graphs/win_after_7_{matches}.png')
+    plt.show()
 
 
 

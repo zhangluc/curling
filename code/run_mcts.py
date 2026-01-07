@@ -7,7 +7,8 @@ import numpy as np
 from copy import deepcopy
 import json
 
-matches = 100000
+matches = 100
+root_team = 1 
 
 frequency_dict = {end: 0 for end in range(1, 9)}  
 frequency_dict["matches"] = matches
@@ -22,9 +23,9 @@ no_hammer_track = {"wins": 0, "draws": 0, "loss": 0}
 
 pp5_lead_check = {
     "pp6_total": 0,
-    "hammer_leading_after_5": 0,
-    "hammer_tied_after_5": 0,
-    "hammer_trailing_after_5": 0
+    "root_leading_after_5": 0,
+    "root_tied_after_5": 0,
+    "root_trailing_after_5": 0
 }
 
 pp5_lead_margin = {
@@ -34,9 +35,9 @@ pp5_lead_margin = {
 
 pp6_lead_check = {
     "pp7_total": 0,
-    "hammer_leading_after_6": 0,
-    "hammer_tied_after_6": 0,
-    "hammer_trailing_after_6": 0
+    "root_leading_after_6": 0,
+    "root_tied_after_6": 0,
+    "root_trailing_after_6": 0
 }
 
 pp6_lead_margin = {
@@ -44,20 +45,35 @@ pp6_lead_margin = {
     "by_margin": {} 
 }
 
+pp7_lead_check = {
+    "pp8_total": 0,
+    "root_leading_after_7": 0,
+    "root_tied_after_7": 0,
+    "root_trailing_after_7": 0
+}
+
+pp7_lead_margin = {
+    "total": 0,
+    "by_margin": {} 
+}
+
 for _ in range(matches):
     hammer = np.random.choice([1, 2])
-    powerplay_used = {1: False, 2: False}
-    current_score = {1: 0, 2: 0}
-    powerplays_remaining = {1: 1, 2: 1}
-    pp_usage = {1: None, 2: None}
     start_hammer = hammer
-    root_team = 1
+    powerplay_used = {1: False, 2: False}
+    powerplays_remaining = {1: 1, 2: 1}
+    current_score = {1: 0, 2: 0}
+    
+    root_pp_end = None
+    
 
     for end in range(1, 9):
+        acting_team = hammer
+
         state = GameState(
             current_score = deepcopy(current_score),
             end_number = end, 
-            root_team = root_team,
+            root_team = acting_team,
             hammer_team = hammer,
             powerplay_used = deepcopy(powerplay_used),
             powerplays_remaining = deepcopy(powerplays_remaining)
@@ -66,57 +82,61 @@ for _ in range(matches):
         mcts = MCTS(bayesian_eval_continuous, 1000)
         best_action, _ = mcts.search(state)
         
-        if best_action == "PP" and powerplays_remaining[root_team] > 0:
-            if end == 6:
-                pp5_lead_check["pp6_total"] += 1
+        if best_action == "PP" and powerplays_remaining[acting_team] > 0:
+            if acting_team == root_team:
+                root_pp_end = end
+                frequency_dict[end] += 1
 
                 lead = int(current_score[root_team] - current_score[3 - root_team])
+                if end == 6:
+                    pp5_lead_check["pp6_total"] += 1
+                    if lead > 0:
+                        pp5_lead_check["root_leading_after_5"] += 1
+                    elif lead < 0:
+                        pp5_lead_check["root_trailing_after_5"] += 1
+                    else:
+                        pp5_lead_check["root_tied_after_5"] += 1
 
-                if lead > 0:
-                    pp5_lead_check["hammer_leading_after_5"] += 1
-                elif lead < 0:
-                    pp5_lead_check["hammer_trailing_after_5"] += 1
-                else:
-                    pp5_lead_check["hammer_tied_after_5"] += 1
+                    pp5_lead_margin["total"] += 1
+                    pp5_lead_margin["by_margin"][lead] = pp5_lead_margin["by_margin"].get(lead, 0) + 1     
 
-                pp5_lead_margin["total"] += 1
-                pp5_lead_margin["by_margin"][lead] = (
-                    pp5_lead_margin["by_margin"].get(lead, 0) + 1
-                )
+                if end == 7:
+                    pp6_lead_check["pp7_total"] += 1
+                    if lead > 0:
+                        pp6_lead_check["root_leading_after_6"] += 1
+                    elif lead < 0:
+                        pp6_lead_check["root_trailing_after_6"] += 1
+                    else:
+                        pp6_lead_check["root_tied_after_6"] += 1
 
-            if end == 7:
-                pp6_lead_check["pp7_total"] += 1
+                    pp6_lead_margin["total"] += 1
+                    pp6_lead_margin["by_margin"][lead] = pp6_lead_margin["by_margin"].get(lead, 0) + 1
 
-                lead = int(current_score[root_team] - current_score[3 - root_team])
+                if end == 8:
+                    pp7_lead_check["pp8_total"] += 1
+                    if lead > 0:
+                        pp7_lead_check["root_leading_after_7"] += 1
+                    elif lead < 0:
+                        pp7_lead_check["root_trailing_after_7"] += 1
+                    else:
+                        pp7_lead_check["root_tied_after_7"] += 1
 
-                if lead > 0:
-                    pp6_lead_check["hammer_leading_after_6"] += 1
-                elif lead < 0:
-                    pp6_lead_check["hammer_trailing_after_6"] += 1
-                else:
-                    pp6_lead_check["hammer_tied_after_6"] += 1
+                    pp7_lead_margin["total"] += 1
+                    pp7_lead_margin["by_margin"][lead] = pp7_lead_margin["by_margin"].get(lead, 0) + 1
+ 
+            powerplay_used[acting_team] = True
+            powerplays_remaining[acting_team] -= 1
 
-                pp6_lead_margin["total"] += 1
-                pp6_lead_margin["by_margin"][lead] = (
-                    pp6_lead_margin["by_margin"].get(lead, 0) + 1
-                )
-
-            pp_usage[root_team] = end
-            frequency_dict[end] += 1
-            powerplay_used[root_team] = True
-            powerplays_remaining[root_team] -= 1
-
+        
         dist = PROB_TABLE_END_DIFF[best_action][end]
         outcomes = list(dist.keys())
         probs = np.array(list(dist.values()), dtype=float)
         result = np.random.choice(outcomes, p=probs)        
 
-        opp_team = 3 - root_team
-
         if result > 0:
-            current_score[root_team] += result
+            current_score[hammer] += result
         elif result < 0:
-            current_score[opp_team] += -result
+            current_score[3 - hammer] += -result
  
         if result  > 0: 
             hammer = 3 - hammer  
@@ -125,14 +145,14 @@ for _ in range(matches):
         else:  
             hammer = 3 - hammer  
 
-    pp_end = pp_usage[root_team]
-    if pp_end is not None:
-        if current_score[root_team] > current_score[3 - root_team]:
-            wins_dict[pp_end] += 1
-        elif current_score[root_team] < current_score[3 - root_team]:
-            loss_dict[pp_end] += 1
+    if root_pp_end is not None:
+        opp = 3 - root_team
+        if current_score[root_team] > current_score[opp]:
+            wins_dict[root_pp_end] += 1
+        elif current_score[root_team] < current_score[opp]:
+            loss_dict[root_pp_end] += 1
         else:
-            draws_dict[pp_end] += 1
+            draws_dict[root_pp_end] += 1
 
 
     if current_score[start_hammer] > current_score[3 - start_hammer]:
@@ -151,8 +171,8 @@ hammer_analysis = {
     "no_hammer_start": no_hammer_track
 }
 
-with open(f'/Users/brentkong/Documents/curling/figures/simulations/frequency_dict_{matches}_new.json', 'w') as f:
-    json.dump([frequency_dict, wins_dict, loss_dict, draws_dict, hammer_analysis, pp5_lead_check, pp5_lead_margin, pp6_lead_check, pp6_lead_margin], f, indent=4) 
+with open(f'/Users/brentkong/Documents/curling/figures/simulations/frequency_dict_{matches}_both.json', 'w') as f:
+    json.dump([frequency_dict, wins_dict, loss_dict, draws_dict, hammer_analysis, pp5_lead_check, pp5_lead_margin, pp6_lead_check, pp6_lead_margin, pp7_lead_check, pp7_lead_margin], f, indent=4) 
 
 
 
