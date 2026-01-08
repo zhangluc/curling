@@ -86,7 +86,7 @@ summary_df.to_csv("/Users/brentkong/Documents/curling/figures/analysis/simulatio
 margin_df.to_csv("/Users/brentkong/Documents/curling/figures/analysis/simulation_statistics/powerplay_entry_margin_stats_6_8.csv", index=False)
 
 
-with open('/Users/brentkong/Documents/curling/figures/simulations/frequency_dict_10000.json', 'r') as f:
+with open('/Users/brentkong/Documents/curling/figures/simulations/frequency_dict_100000.json', 'r') as f:
     data = json.load(f)
 
 def weighted_stats(by_margin):
