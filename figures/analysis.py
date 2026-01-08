@@ -139,8 +139,8 @@ for key, value in frequency_dict.items():
 
 
 value_dict = {"PP_called_End6_margin_after5": weighted_stats(by_margin_raw_6),
-"PP_called_End6_margin_after6": weighted_stats(by_margin_raw_7),
-"PP_called_End7_margin_after6": weighted_stats(by_margin_raw_8),
+"PP_called_End7_margin_after6": weighted_stats(by_margin_raw_7),
+"PP_called_End8_margin_after7": weighted_stats(by_margin_raw_8),
 }
 
 df = pd.DataFrame({

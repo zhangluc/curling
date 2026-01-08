@@ -7,7 +7,7 @@ import numpy as np
 from copy import deepcopy
 import json
 
-matches = 10000
+matches = 100000
 root_team = 1 
 
 pp_calls_dict = {end: 0 for end in range(1, 9)}
@@ -82,6 +82,9 @@ for _ in range(matches):
         mcts = MCTS(bayesian_eval_continuous, 1000)
         best_action, _ = mcts.search(state)
         
+        if best_action == "PP" and powerplays_remaining[acting_team] <= 0:
+            best_action = "NO_PP"
+
         if best_action == "PP" and powerplays_remaining[acting_team] > 0:
             if pp_end_by_team[acting_team] is None:
                 pp_end_by_team[acting_team] = end
@@ -128,7 +131,6 @@ for _ in range(matches):
 
             powerplay_used[acting_team] = True
             powerplays_remaining[acting_team] -= 1
-
 
         
         dist = PROB_TABLE_END_DIFF[best_action][end]
