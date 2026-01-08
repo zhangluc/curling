@@ -1,32 +1,13 @@
-# STILL WORKING ON THE GRAPHS (SOME AREN'T ENTIRELY CORRECT & TRYNA ADD MORE)
 #
 #
-# shows the impact of power play by comparing to what would have happened wihtout power play
+# shows the impact of power play by comparing to what would have happened without power play
 library(tidyverse)
 
 ends <- read_csv("dfs/ends_processed.csv")
 games <- read_csv("dfs/games_processed.csv")
 stones <- read_csv("dfs/stones_processed.csv")
 
-# Create a simple PP indicator
-ends <- ends %>%
-  mutate(
-    Used_PP = ifelse(is.na(PowerPlay) | PowerPlay == 0, 0, 1)
-  )
-
-# Compare scoring with vs without Power Play
-pp_summary <- ends %>%
-  group_by(Used_PP) %>%
-  summarise(
-    Avg_Points = mean(Result, na.rm = TRUE),
-    Median_Points = median(Result, na.rm = TRUE),
-    Big_End_Rate = mean(Result >= 3, na.rm = TRUE),
-    Ends = n()
-  )
-
-pp_summary #answers: Does PP increase average score? & Does it increase big ends (3+)?
-
-# Same comparison only when team has hammer
+# Does PP increase average score for hammer team?
 pp_hammer_summary <- ends %>%
   filter(Has_Hammer == 1) %>%
   group_by(Used_PP) %>%
@@ -38,6 +19,24 @@ pp_hammer_summary <- ends %>%
 
 pp_hammer_summary #important bc PP decisions only matter when you have hammer
 
+hammer_ends <- ends %>%
+  filter(Has_Hammer == 1)
+pp_points     <- hammer_ends %>% filter(Used_PP == 1) %>% pull(Result)
+no_pp_points  <- hammer_ends %>% filter(Used_PP == 0) %>% pull(Result)
+t_test_result <- t.test(pp_points, no_pp_points, conf.level = 0.95)
+
+t_test_result
+
+ci_summary <- tibble(
+  Mean_PP     = mean(pp_points),
+  Mean_No_PP  = mean(no_pp_points),
+  PP_Effect   = mean(pp_points) - mean(no_pp_points),
+  CI_Lower    = t_test_result$conf.int[1],
+  CI_Upper    = t_test_result$conf.int[2]
+)
+
+ci_summary
+
 # Compute expected non-PP scoring
 # estimate baseline scoring when: no Power Play & hammer = yes
 baseline_no_pp <- ends %>%
@@ -48,7 +47,8 @@ baseline_no_pp <- ends %>%
   pull(Expected_No_PP)
 
 baseline_no_pp # counterfactual baseline
-# If we remove all power-play ends and look only at “normal” ends, gives the average points scored per end
+# If we remove all power-play ends and look only at “normal” ends, 
+# gives the average points scored per end
 
 # Replace PP ends with baseline
 # Create a “no PP world” version of the data
@@ -60,34 +60,41 @@ ends_counterfactual <- ends %>%
     )
   )
 
-# Compare total scoring: real vs no-PP world
+# Compare real vs no-PP world
 comparison <- ends_counterfactual %>%
   summarise(
-    Actual_Total = sum(Result, na.rm = TRUE),
-    No_PP_Total = sum(Result_No_PP, na.rm = TRUE),
-    Difference = Actual_Total - No_PP_Total
+    Avg_Actual = mean(Result, na.rm = TRUE),
+    Avg_No_PP  = mean(Result_No_PP, na.rm = TRUE),
+    PP_Effect  = Avg_Actual - Avg_No_PP
   )
 
-comparison
+comparison #Per-end average difference
 
-# Per-game impact of Power Play
-game_level_effect <- ends_counterfactual %>%
-  group_by(GameUID) %>%
+end_dist_comparison <- ends_counterfactual %>%
+  mutate(PP_Delta = Result - Result_No_PP) %>%
   summarise(
-    Actual = sum(Result, na.rm = TRUE),
-    No_PP = sum(Result_No_PP, na.rm = TRUE),
-    PP_Gain = Actual - No_PP,
-    .groups = "drop"
+    Mean_Effect = mean(PP_Delta),
+    Median_Effect = median(PP_Delta),
+    Positive_Rate = mean(PP_Delta > 0),
+    Negative_Rate = mean(PP_Delta < 0),
+    Zero_Rate = mean(PP_Delta == 0)
   )
+
+end_dist_comparison #distribution of per-end differences
+
+big_end_comparison <- ends_counterfactual %>%
+  summarise(
+    Big_End_Actual = mean(Result >= 3),
+    Big_End_No_PP  = mean(Result_No_PP >= 3),
+    Big_End_Gain   = Big_End_Actual - Big_End_No_PP
+  )
+
+big_end_comparison #big-end probability shift
 
 # Save the feature-enhanced dataset
 # use this to: plot PP vs non-PP, compare strategies, motivate Monte Carlo or modeling later
 write_csv(ends_counterfactual, "dfs/ends_with_counterfactual.csv")
 summary(game_level_effect$PP_Gain)
-
-#results:
-#imply that Power Play should be used: When geometry is favorable, Against certain opponents, In specific game states
-#motivates Feature engineering, Conditional models, Simulation-based decision rules
 
 
 #
@@ -95,68 +102,113 @@ summary(game_level_effect$PP_Gain)
 #PLOTS
 library(ggplot2)
 
+# Per-game impact of Power Play
+game_level_effect <- ends_counterfactual %>%
+  filter(Used_PP == 1 & Has_Hammer == 1) %>%  # ONLY PP ends for hammer team
+  group_by(GameUID) %>%
+  summarise(
+    PP_Gain = sum(Result - Result_No_PP, na.rm = TRUE),
+    .groups = "drop"
+  )
+
 #
-# fix
+#
 # Histogram of PP_Gain (core plot); risk–reward profile 
 ggplot(game_level_effect, aes(x = PP_Gain)) +
   geom_histogram(binwidth = 0.5, fill = "steelblue", color = "white") +
-  geom_vline(xintercept = 0, linetype = "dashed", color = "red") +
+  
+  # Zero-impact reference line
+  geom_vline(xintercept = 0,
+             linetype = "dashed",
+             color = "red",
+             linewidth = 1) +
+  
+  # Mean PP gain line
+  geom_vline(xintercept = mean(game_level_effect$PP_Gain, na.rm = TRUE),
+             linetype = "solid",
+             color = "darkblue",
+             linewidth = 1) +
+  
+  # Bound to realistic PP impact range
+  coord_cartesian(xlim = c(-6, 6)) +
+  
   labs(
     title = "Distribution of Power Play Impact per Game",
+    subtitle = "Dashed red = no effect, solid blue = average effect",
     x = "Points gained from Power Play (Actual − No PP)",
     y = "Number of games"
-  )
+  ) +
+  
+  theme_minimal(base_size = 13)
 
 #
 #
 # boxplot
-# look into: why are there only three dots????
-ggplot(game_level_effect, aes(y = PP_Gain)) +
-  geom_boxplot(fill = "lightgray") +
+ggplot(game_level_effect, aes(x = "", y = PP_Gain)) +
+  geom_boxplot(fill = "lightgray", outlier.shape = NA) +
+  geom_jitter(
+    width = 0.1,
+    alpha = 0.3,
+    size = 1.5,
+    color = "steelblue"
+  ) +
   geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
   labs(
     title = "Power Play Impact per Game",
+    subtitle = "Each point represents one game",
+    x = NULL,
     y = "PP Gain (points)"
-  )
-
-#
-# fix
-# Team-level average PP_Gain
-team_effect <- ends_counterfactual %>%
-  group_by(TeamID) %>%
-  summarise(mean_PP_Gain = mean(Result - Result_No_PP))
-
-ggplot(team_effect, aes(x = reorder(TeamID, mean_PP_Gain), y = mean_PP_Gain)) +
-  geom_col(fill = "darkgreen") +
-  coord_flip() +
-  labs(
-    title = "Average Power Play Impact by Team",
-    x = "Team",
-    y = "Average PP Gain"
-  )
+  ) +
+  theme_minimal()
 
 #
 #
 # when power plays are most effective
 # PP effectiveness by end number
 pp_by_end <- ends_counterfactual %>%
-  filter(Has_Hammer == 1) %>%
+  filter(
+    Has_Hammer == 1,
+    EndID >= 3        # DROP ends 1 & 2
+  ) %>%
   group_by(EndID, Used_PP) %>%
   summarise(
     Avg_Points = mean(Result, na.rm = TRUE),
-    N = n()
-  )
+    SE = sd(Result, na.rm = TRUE) / sqrt(n()),
+    N = n(),
+    .groups = "drop"
+  ) %>%
+  filter(N >= 20)     # avoid low-sample artifacts
 
 # Visualize
-ggplot(pp_by_end, aes(x = EndID, y = Avg_Points, color = factor(Used_PP))) +
-  geom_line() +
-  geom_point() +
-  scale_x_continuous(
-    breaks = 1:8,
-    limits = c(1, 8)
+ggplot(pp_by_end,
+       aes(x = EndID,
+           y = Avg_Points,
+           color = factor(Used_PP),
+           group = Used_PP)) +
+  geom_line(linewidth = 1) +
+  geom_point(size = 2) +
+  geom_errorbar(
+    aes(
+      ymin = Avg_Points - 1.96 * SE,
+      ymax = Avg_Points + 1.96 * SE
+    ),
+    width = 0.15,
+    alpha = 0.6
   ) +
-  labs(title = "Power Play Effectiveness by End",
-       color = "Used PP")
+  scale_color_manual(
+    values = c("0" = "#F8766D", "1" = "#00BFC4"),
+    labels = c("No Power Play", "Power Play")
+  ) +
+  scale_x_continuous(breaks = 3:8, limits = c(3, 8)) +
+  labs(
+    title = "Power Play Effectiveness by End (Hammer Team)",
+    subtitle = "Ends 3–8 only; points show mean ± 95% CI",
+    x = "End",
+    y = "Average Points Scored",
+    color = ""
+  ) +
+  theme_minimal(base_size = 13)
+
 
 #
 #
@@ -268,35 +320,36 @@ ggplot(pp_context_summary, aes(x = EndID, y = Game_Context, fill = Avg_PP_Gain))
 #
 # left vs right pp (table)
 # Test if left/right PP matters
-left_right_analysis <- ends_with_context %>%
+
+pp_lr_context <- ends_with_context %>%
   filter(Used_PP == 1, Has_Hammer == 1) %>%
   mutate(
     PP_Side = case_when(
       PowerPlay == 1 ~ "Right",
-      PowerPlay == 2 ~ "Left",
-      TRUE ~ "Unknown"
+      PowerPlay == 2 ~ "Left"
+    ),
+    Score_Context = case_when(
+      Score_Diff_Before < 0 ~ "Behind",
+      Score_Diff_Before == 0 ~ "Tied",
+      TRUE ~ "Ahead"
     )
   ) %>%
-  group_by(PP_Side, EndID) %>%
+  group_by(EndID, Score_Context, PP_Side) %>%
   summarise(
     Avg_Score = mean(Result),
     Big_End_Rate = mean(Result >= 3),
     N = n(),
     .groups = "drop"
-  )
+  ) %>%
+  filter(N >= 10)
 
-# Statistical test
-left_results <- ends_with_context %>% 
-  filter(PowerPlay == 2, Has_Hammer == 1) %>% 
-  pull(Result)
+lm_pp <- lm(
+  Result ~ PP_Side + EndID + Score_Diff_Before,
+  data = ends_with_context %>%
+    filter(Used_PP == 1, Has_Hammer == 1, PowerPlay %in% c(1, 2)) %>%
+    mutate(
+      PP_Side = if_else(PowerPlay == 1, "Right", "Left")  # 1=Right, 2=Left
+    )
+)
 
-right_results <- ends_with_context %>% 
-  filter(PowerPlay == 1, Has_Hammer == 1) %>% 
-  pull(Result)
-
-t_test <- t.test(left_results, right_results)
-
-print("Left vs Right PP Comparison:")
-print(left_right_analysis)
-print(paste("T-test p-value:", round(t_test$p.value, 4)))
-
+summary(lm_pp)
