@@ -110,6 +110,52 @@ Install dependencies:
 ```bash
 pip install -r requirements.txt
 ```
+---
+
+## Virtual Environment (Recommended)
+
+To ensure consistent dependencies and avoid conflicts with system packages, it is recommended to run this project inside a Python virtual environment.
+
+### Create a Virtual Environment
+
+From the project root directory:
+
+```bash
+python3 -m venv venv
+```
+
+### Activate the Virtual Environment
+
+**macOS / Linux**
+
+```bash
+source venv/bin/activate
+```
+
+**Windows (PowerShell)**
+
+```powershell
+venv\Scripts\Activate.ps1
+```
+
+### Install Dependencies
+
+With the virtual environment activated:
+
+```bash
+pip install --upgrade pip
+pip install -r requirements.txt
+```
+
+### Deactivate
+
+When finished:
+
+```bash
+deactivate
+```
+
+> Note: The virtual environment folder (`venv/`) should not be committed to version control. Add it to `.gitignore`.
 
 ---
 
