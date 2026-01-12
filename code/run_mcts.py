@@ -10,7 +10,7 @@ from bayesian_ev import bayesian_eval_continuous
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 SAVE_DIR = PROJECT_ROOT / "figures" / "simulations"
 
-matches = 1000
+matches = 100000
 root_team = 1 
 
 pp_calls_dict = {end: 0 for end in range(1, 9)}
