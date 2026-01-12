@@ -1,7 +1,9 @@
 import pyro
+import uuid
 import torch
 import pandas as pd
 from pathlib import Path
+from datetime import datetime
 import pyro.distributions as dist
 from pyro.infer import MCMC, NUTS
 
@@ -28,7 +30,6 @@ def BaysianRegression(X, y=None):
     mu = X @ w + b
     pyro.sample("obs", dist.Normal(mu, sigma), obs=y)
 
-
 if __name__ == "__main__":
     model = BaysianRegression
     nuts_kernel = NUTS(model)
@@ -39,4 +40,12 @@ if __name__ == "__main__":
     print(posterior["w"].mean(0), posterior["b"].mean())
     print("Posterior b:", posterior["b"].mean())
 
-    torch.save(posterior, SAVE_DIR / f"unitddpm_{model}_weights.pt")
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    uid = uuid.uuid4().hex[:8]
+    model_name = model.__name__
+
+    filename = f"unitddpm_{model_name}_{timestamp}_{uid}_weights.pt"
+
+    torch.save(posterior, SAVE_DIR / filename)
+
+    print(f"Saved weights to: {SAVE_DIR / filename}")
