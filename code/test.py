@@ -1,4 +1,4 @@
-from bayesian_ev import bayesian_eval_continuous, bayesian_eval_ordered
+from bayesian_ev import bayesian_eval_continuous
 import pandas as pd
 import torch
 
@@ -51,15 +51,9 @@ if __name__ == "__main__":
     y = test_df["Result"]
 
     results_cont = test_model(X, y, bayesian_eval_continuous)
-    results_ord = test_model(X, y, bayesian_eval_ordered)
 
 
     pd.DataFrame([results_cont]).to_csv(
         "/Users/brentkong/Documents/curling/data_processing/Model_Results_Continuous.csv",
-        index=False
-    )
-
-    pd.DataFrame([results_ord]).to_csv(
-        "/Users/brentkong/Documents/curling/data_processing/Model_Results_Ordered.csv",
         index=False
     )

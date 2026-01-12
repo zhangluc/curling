@@ -1,6 +1,6 @@
-# Curling AI Simulation with MCTS and Bayesian Models
+# Curling AI Simulation with MCTS and Bayesian Regression
 
-This project implements a **Monte Carlo Tree Search (MCTS) agent** guided by **Bayesian predictive models** to simulate and evaluate curling games. It includes **training Bayesian models**, **testing their predictive accuracy**, and **running simulations to determine optimal strategic decisions** such as the use of Power Plays.
+This project implements a **Monte Carlo Tree Search (MCTS) agent** guided by a **Bayesian regression model** to simulate and evaluate curling games. It includes **training a Bayesian model**, **testing its predictive accuracy**, and **running simulations to determine optimal strategic decisions** such as Power Play timing.
 
 ---
 
@@ -9,9 +9,10 @@ This project implements a **Monte Carlo Tree Search (MCTS) agent** guided by **B
 * [Overview](#overview)
 * [Folder Structure](#folder-structure)
 * [Requirements](#requirements)
+* [Data Processing & Train-Test Split](#data-processing--train-test-split)
 * [Bayesian Model Training](#bayesian-model-training)
-* [EV Evaluation Functions](#ev-evaluation-functions)
-* [MCTS + Game Simulation](#mcts--game-simulation)
+* [EV Evaluation Function](#ev-evaluation-function)
+* [MCTS Game Simulation](#mcts-game-simulation)
 * [Testing and Metrics](#testing-and-metrics)
 * [Output Files](#output-files)
 
@@ -21,27 +22,25 @@ This project implements a **Monte Carlo Tree Search (MCTS) agent** guided by **B
 
 The project consists of three main components:
 
-1. **Bayesian Regression / Ordered Logistic Models**
+1. **Bayesian Regression Model**
 
-   * Trained to predict **expected end scores (EV)** based on game features:
+   * Predicts expected end score (EV) from game features:
 
      * Hammer possession
      * Power Play usage
-     * Current end number
+     * End number
      * Previous score difference
-   * Supports both **continuous regression** and **ordinal scoring (OrderedLogistic)**.
+   * Provides both expected value and uncertainty.
 
-2. **EV Evaluation Functions**
+2. **EV Evaluation Function**
 
-   * `bayesian_eval_continuous(features, posterior)`
-   * `bayesian_eval_ordered(features, posterior)`
-   * These functions compute the **expected value (EV)** and **uncertainty** for a given state.
+   * Computes expected value for a given game state using posterior samples.
 
-3. **Monte Carlo Tree Search (MCTS) Simulation**
+3. **Monte Carlo Tree Search (MCTS)**
 
-   * Uses EV predictions to guide tree search.
-   * Simulates multiple possible end outcomes using **probabilistic score tables (`PROB_TABLE_END_DIFF`)**.
-   * Decides on actions such as **Power Play usage** to maximize win probability.
+   * Uses Bayesian EV predictions to guide tree search.
+   * Simulates stochastic scoring outcomes using empirical score tables.
+   * Learns optimal Power Play timing policies.
 
 ---
 
@@ -59,166 +58,214 @@ project/
 │   └── train_bayesian_model.py
 │
 ├── data_processing
+│   ├── data_analysis.ipynb
 │   ├── data_processing.ipynb
+│   ├── train_test_split.ipynb
 │   ├── model_results
-│   │   ├── Model_Results_Continuous.csv
-│   │   └── Model_Results_Ordered.csv
+│   │   └── Model_Results_Continuous.csv
 │   ├── processed_data
 │   │   ├── bayesian_training.csv
 │   │   ├── ends_processed.csv
 │   │   ├── games_processed.csv
 │   │   └── stones_processed.csv
-│   ├── train_test_data
-│   │   ├── test_df.csv
-│   │   └── train_df.csv
-│   └── train_test_split.ipynb
+│   └── train_test_data
+│       ├── train_df.csv
+│       └── test_df.csv
 │
 ├── figures
 │   ├── analysis
-│   │   └── analysis.csv
+│   │   ├── end_frequency
+│   │   ├── end_frequency_combined
+│   │   ├── end_frequency_smooth
+│   │   ├── result_correlation_heatmap.png
+│   │   └── simulation_statistics
 │   ├── analysis.py
 │   ├── graphs
-│   │   ├── Frequency_End.png
-│   │   ├── hammer_vs_no_hammer_pie.png
-│   │   └── Win_Draw_Per_End.png
+│   ├── graphs.py
 │   └── simulations
-│       └── frequency_dict_10000.json
+│       └── frequency_dict_100000.json
 │
-├── weights
-│   ├── testing_weights
-│   │   ├── unitddpm_<function BaysianRegression ...>_weights.pt
-│   │   └── unitddpm_<function OrderedLogistic ...>_weights.pt
-│   └── unitddpm_<function BaysianRegression ...>_weights.pt
-│
-├── README.md
 ├── requirements.txt
-└── useful_commands.md
+│
+└── weights
+    ├── testing_weights
+    │   └── unitddpm_<function BaysianRegression at 0x122cf0cc0>_weights.pt
+    └── unitddpm_<function BaysianRegression at 0x1196f0cc0>_weights.pt
 ```
 
 ---
-### Requirements
 
-This project requires Python 3.13+ and the following packages:
+## Requirements
 
-* **PyTorch** (`torch`): Core library for tensor computations and modeling. Used for Bayesian regression, Ordered Logistic models, and MCTS evaluation.
-* **Pyro** (`pyro-ppl`): Probabilistic programming library built on PyTorch. Used for Bayesian model definition and inference.
-* **Pandas** (`pandas`): Data manipulation and preprocessing, including reading CSVs for training and testing.
-* **Matplotlib** (`matplotlib`): Visualization of results, simulation outputs, and graphs.
-* **scikit-learn** (`sklearn`): Evaluation metrics like RMSE, MAE, and R², and optional preprocessing utilities.
+Python 3.13+ and the following packages:
 
-You can install all dependencies via pip:
+* **torch** – Bayesian regression model
+* **pyro-ppl** – probabilistic inference (NUTS)
+* **pandas** – data processing
+* **matplotlib** – visualization
+* **scikit-learn** – evaluation metrics
+
+Install dependencies:
 
 ```bash
 pip install -r requirements.txt
 ```
+
+---
+
+## Data Processing & Train-Test Split
+
+Raw Curling Canada shot-level data is processed into end-level and game-level datasets using:
+
+```bash
+jupyter notebook data_processing/data_processing.ipynb
+```
+
+The Bayesian training dataset is then split into training and testing sets using an **80–20 split**:
+
+```bash
+jupyter notebook data_processing/train_test_split.ipynb
+```
+
+This produces:
+
+```
+data_processing/train_test_data/train_df.csv
+data_processing/train_test_data/test_df.csv
+```
+
+These files are used for model training and evaluation.
+
 ---
 
 ## Bayesian Model Training
 
-Two models are trained using Pyro + NUTS (Hamiltonian Monte Carlo):
+A **Bayesian linear regression model** is trained using Pyro + NUTS (Hamiltonian Monte Carlo).
 
-1. **Ordered Logistic Model**
+The model:
 
-   * Predicts discrete outcomes (score differences 0–6).
-   * Uses `raw_cutpoints` transformed to ensure monotonicity with `softplus` + `cumsum`.
+* Predicts expected end score (real-valued)
+* Learns posterior distributions over weights and noise
+* Provides predictive uncertainty
 
-2. **Continuous Bayesian Regression**
-
-   * Predicts continuous expected scores.
-   * Estimates mean (`mu`) and uncertainty (`sigma`).
-
-Training script:
+Train the model with:
 
 ```bash
 python train_bayesian_model.py
 ```
 
-* Saves posterior weights as `.pt` files.
-* Posterior weights are later used for EV evaluation.
+This:
+
+* Loads `train_df.csv`
+* Runs Bayesian inference
+* Saves posterior weights to `weights/`
 
 ---
 
-## EV Evaluation Functions
+## EV Evaluation Function
 
-* `bayesian_eval_continuous(features, posterior)` → returns `(mean, std)`
-* `bayesian_eval_ordered(features, posterior)` → returns `(mean, std)`
+Implemented in `bayesian_ev.py`:
 
-Used by both **MCTS** and testing scripts to calculate expected end outcomes.
+```python
+bayesian_eval_continuous(features, posterior) -> (mean, std)
+```
+
+This function returns:
+
+* **Expected value (EV)** of the end
+* **Predictive uncertainty**
+
+Used by both MCTS and evaluation scripts.
 
 ---
 
-## MCTS + Game Simulation
+## MCTS Game Simulation
 
-**MCTSNode** and **MCTS** classes implement Monte Carlo Tree Search:
+Monte Carlo Tree Search is implemented in `mcts.py` and `gamestate.py`.
 
-* Each node represents a game state.
-* **Expansion:** Adds a new node for unexplored legal action.
-* **Simulation:** Plays out random end outcomes using `PROB_TABLE_END_DIFF`.
-* **Backpropagation:** Updates visit counts and rewards.
+### Key Components
 
-**GameState** class:
+* **GameState**
 
-* Tracks `current_score`, `end_number`, `hammer_team`, `powerplay_used`, and `powerplays_remaining`.
-* Provides:
+  * Tracks score, hammer, end number, and remaining Power Plays
+  * Generates legal actions
+  * Samples stochastic end outcomes using `PROB_TABLE_END_DIFF`
 
-  * Legal actions
-  * Feature vectors for EV evaluation
-  * Next state after an action
-  * Probabilistic end score sampling
+* **MCTS**
+
+  * Selection via UCT
+  * Expansion of new actions
+  * Simulation using probabilistic score tables
+  * Backpropagation of EV-based rewards
+
+Run full simulations with:
+
+```bash
+python run_mcts.py
+```
+
+This simulates thousands of matches and learns optimal Power Play timing strategies.
 
 ---
 
 ## Testing and Metrics
 
-* `test.py` runs predictions for both **continuous** and **ordered** models.
-* Metrics include:
+Model evaluation is performed on the held-out 20% test set.
 
-  * **RMSE:** Root Mean Squared Error
-  * **MAE:** Mean Absolute Error
-  * **Bias:** Average over/underprediction
-  * **R²:** Coefficient of determination
-
-Example usage:
+Run evaluation:
 
 ```bash
 python test.py
+```
+
+Metrics reported:
+
+* **RMSE** – Root Mean Squared Error
+* **MAE** – Mean Absolute Error
+* **Bias** – Mean prediction error
+* **R²** – Coefficient of determination
+
+Results are saved to:
+
+```
+data_processing/model_results/Model_Results_Continuous.csv
 ```
 
 ---
 
 ## Output Files
 
-1. **Model results CSVs**
+### Model Metrics
 
 * `Model_Results_Continuous.csv`
-* `Model_Results_Ordered.csv`
 
-  ```
-  RMSE, MAE, Bias, R2
-  0.93, 0.72, 0.04, 0.16
-  ```
+```
+RMSE, MAE, Bias, R2
+0.91, 0.71, 0.06, 0.14
+```
 
-2. **Simulation JSONs**
+### Simulation Results
 
 * `frequency_dict_<matches>.json`
-  Contains:
 
-  * Power Play frequency per end
-  * Wins, draws, losses per end
-  * Hammer vs. No Hammer analysis
+Contains:
+
+* Power Play frequency per end
+* Win/draw/loss rates
+* Hammer advantage analysis
 
 ---
 
 ## Notes
 
-* **Standard deviation (uncertainty)** from Bayesian models is tracked but not strictly used for EV decisions.
-* Low RMSE (~0.93) is acceptable for the 0–6 score target.
-* MCTS uses **EV differences** and a logistic function to approximate **win probability** per end.
-* Power Play decisions are simulated **strategically** using this setup.
+* Bayesian uncertainty is tracked for stability.
+* MCTS uses EV differences with a logistic transformation to approximate win probability.
+* Power Play timing is learned strategically rather than hard-coded.
+* Low RMSE (< 1 point) is acceptable for a 0–6 scoring range.
 
 ---
 
 ## References
 
 * Pyro: [https://pyro.ai](https://pyro.ai)
-* MCTS: Browne et al., *A Survey of Monte Carlo Tree Search Methods*, 2012
+* Browne et al., *A Survey of Monte Carlo Tree Search Methods*, 2012
