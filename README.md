@@ -112,7 +112,7 @@ pip install -r requirements.txt
 ```
 ---
 
-## Virtual Environment (Recommended)
+## Virtual Environment (Required)
 
 To ensure consistent dependencies and avoid conflicts with system packages, it is recommended to run this project inside a Python virtual environment.
 
