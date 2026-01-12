@@ -5,7 +5,7 @@ from bayesian_ev import bayesian_eval_continuous
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 DATA_DIR = PROJECT_ROOT / "data_processing" / "train_test_data"
-SAVE_DIR = PROJECT_ROOT / "data_processing" 
+SAVE_DIR = PROJECT_ROOT / "data_processing" / "model_results"
 
 def neg_log_likelihood(pred_means, pred_stds, y):
     pred_stds = torch.clamp(pred_stds, min=1e-6)
