@@ -2,3 +2,9 @@
 .Rhistory
 .RData
 .Ruserdata
+__pycache__
+.DS_Store
+*data
+useful_commands.md
+.venv
+.mypy_cache
