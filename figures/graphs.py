@@ -11,7 +11,7 @@ plt.rcParams.update({
     "grid.alpha": 0.25,
     "grid.linestyle": "--",
     "axes.titleweight": "semibold",
-    "font.size": 11,
+    "font.size": 14,
 })
 
 COLORS = {
@@ -53,7 +53,6 @@ categories = list(frequency_dict.keys())
 frequencies = list(frequency_dict.values())
 plt.figure(figsize=(9, 6))
 plt.bar(categories, frequencies, color=COLORS["frequency_bar"], edgecolor="white", linewidth=0.8)
-plt.title("Frequencies of PowerPlays Called per End")
 plt.xlabel("End")
 plt.ylabel("Frequency")
 finish_plot(SAVE_DIR / f"Frequency_End_{matches}.png")
@@ -76,7 +75,6 @@ draw_vals = [draw_percent[k] for k in categories]
 plt.figure(figsize=(9, 6))
 plt.bar(categories, win_vals, label="Win %", color=COLORS["win"], edgecolor="white", linewidth=0.8)
 plt.bar(categories, draw_vals, bottom=win_vals, label="Draw %", color=COLORS["draw"], edgecolor="white", linewidth=0.8)
-plt.title("Win and Draw Percentage per PowerPlay Called at Each End")
 plt.xlabel("End")
 plt.ylabel("Percentage")
 plt.legend(frameon=False)
@@ -100,7 +98,6 @@ def plot_status_pie(title: str, sizes: list, save_name: str):
         wedgeprops={"edgecolor": "white", "linewidth": 1.0},
         textprops={"color": "#222222"},
     )
-    plt.title(title)
     plt.axis("equal")
     finish_plot(SAVE_DIR / save_name)
 
