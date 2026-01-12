@@ -1,6 +1,11 @@
-from bayesian_ev import bayesian_eval_continuous
-import pandas as pd
 import torch
+import pandas as pd
+from pathlib import Path
+from bayesian_ev import bayesian_eval_continuous
+
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+DATA_DIR = PROJECT_ROOT / "data_processing" / "train_test_data"
+SAVE_DIR = PROJECT_ROOT / "data_processing" 
 
 def neg_log_likelihood(pred_means, pred_stds, y):
     pred_stds = torch.clamp(pred_stds, min=1e-6)
@@ -44,7 +49,7 @@ if __name__ == "__main__":
     features = ["Has_Hammer", "PowerPlayBool", "EndID", "PrevScoreDiff", "PrevEndDiff"]
 
     test_df = pd.read_csv(
-        "/Users/brentkong/Documents/curling/data_processing/train_test_data/test_df.csv"
+        DATA_DIR / "test_df.csv"
     )
 
     X = test_df[features]
@@ -54,6 +59,6 @@ if __name__ == "__main__":
 
 
     pd.DataFrame([results_cont]).to_csv(
-        "/Users/brentkong/Documents/curling/data_processing/Model_Results_Continuous.csv",
+        SAVE_DIR / "Model_Results_Continuous.csv",
         index=False
     )

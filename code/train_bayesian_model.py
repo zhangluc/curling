@@ -1,10 +1,15 @@
-import pandas as pd
-import torch
 import pyro
+import torch
+import pandas as pd
+from pathlib import Path
 import pyro.distributions as dist
 from pyro.infer import MCMC, NUTS
 
-df = pd.read_csv("/Users/brentkong/Documents/curling/data_processing/train_test_data/train_df.csv")
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+DATA_DIR = PROJECT_ROOT / "data_processing" / "train_test_data"
+SAVE_DIR = PROJECT_ROOT / "weights" / "testing_weights"
+
+df = pd.read_csv(DATA_DIR / "train_df.csv")
 
 features = ["Has_Hammer",
             "PowerPlayBool",
@@ -34,4 +39,4 @@ if __name__ == "__main__":
     print(posterior["w"].mean(0), posterior["b"].mean())
     print("Posterior b:", posterior["b"].mean())
 
-    torch.save(posterior, f"/Users/brentkong/Documents/curling/weights/testing_weights/unitddpm_{model}_weights.pt")
+    torch.save(posterior, SAVE_DIR / f"unitddpm_{model}_weights.pt")

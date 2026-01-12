@@ -1,13 +1,16 @@
-import torch
-from mcts import MCTS
-from gamestate import GameState
-from bayesian_ev import bayesian_eval_continuous
-from prob_table import PROB_TABLE_END_DIFF
-import numpy as np
-from copy import deepcopy
 import json
+import numpy as np
+from mcts import MCTS
+from pathlib import Path
+from copy import deepcopy
+from gamestate import GameState
+from prob_table import PROB_TABLE_END_DIFF
+from bayesian_ev import bayesian_eval_continuous
 
-matches = 100000
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+SAVE_DIR = PROJECT_ROOT / "figures" / "simulations"
+
+matches = 1000
 root_team = 1 
 
 pp_calls_dict = {end: 0 for end in range(1, 9)}
@@ -90,7 +93,6 @@ for _ in range(matches):
                 pp_end_by_team[acting_team] = end
                 pp_calls_dict[end] += 1
 
-                # caller POV entering-end margin
                 lead = int(current_score[acting_team] - current_score[3 - acting_team])
 
                 if end == 6:
@@ -179,7 +181,7 @@ hammer_analysis = {
     "no_hammer_start": no_hammer_track
 }
 
-with open(f'/Users/brentkong/Documents/curling/figures/simulations/frequency_dict_{matches}.json', 'w') as f:
+with open(SAVE_DIR / f'frequency_dict_{matches}.json', 'w') as f:
     json.dump([
         pp_calls_dict, pp_wins_dict, pp_loss_dict, pp_draws_dict,
         hammer_analysis,

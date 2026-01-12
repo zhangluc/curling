@@ -1,8 +1,14 @@
-import pandas as pd
-import numpy as np
 import json
+import numpy as np
+import pandas as pd
+from pathlib import Path
 
-df = pd.read_csv("/Users/brentkong/Documents/curling/data_processing/processed_data/ends_processed.csv")
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+DATA_DIR = PROJECT_ROOT / "data_processing" / "processed_data"
+SAVE_DIR = PROJECT_ROOT / "figures" / "analysis" / "simulation_statistics"
+SIMULATIONS_DIR = PROJECT_ROOT / "figures" / "simulations"
+
+df = pd.read_csv(DATA_DIR / "ends_processed.csv")
 
 def stats_from_series(s: pd.Series):
     """Return mean/median/mode/quantiles in the same schema you used."""
@@ -82,11 +88,11 @@ margin_df = pd.DataFrame.from_dict(margin_stats, orient="index")
 margin_df.index.name = "Dataset"
 margin_df.reset_index(inplace=True)
 
-summary_df.to_csv("/Users/brentkong/Documents/curling/figures/analysis/simulation_statistics/powerplay_end_summary.csv", index=False)
-margin_df.to_csv("/Users/brentkong/Documents/curling/figures/analysis/simulation_statistics/powerplay_entry_margin_stats_6_8.csv", index=False)
+summary_df.to_csv(SAVE_DIR / "powerplay_end_summary.csv", index=False)
+margin_df.to_csv(SAVE_DIR / "powerplay_entry_margin_stats_6_8.csv", index=False)
 
 
-with open('/Users/brentkong/Documents/curling/figures/simulations/frequency_dict_100000.json', 'r') as f:
+with open(SIMULATIONS_DIR / 'frequency_dict_100000.json', 'r') as f:
     data = json.load(f)
 
 def weighted_stats(by_margin):
@@ -159,5 +165,5 @@ df2.reset_index(inplace=True)
 
 df.index = df.index.astype(int)
 
-df.to_csv(f'/Users/brentkong/Documents/curling/figures/analysis/simulation_statistics/analysis_{matches}_both.csv', index = False)
-df2.to_csv(f'/Users/brentkong/Documents/curling/figures/analysis/simulation_statistics/analysis_margin{matches}_both.csv', index = False)
+df.to_csv(SAVE_DIR / f'analysis_{matches}_both.csv', index = False)
+df2.to_csv(SAVE_DIR / f'analysis_margin{matches}_both.csv', index = False)

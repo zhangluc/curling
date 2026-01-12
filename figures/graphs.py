@@ -1,284 +1,135 @@
-import matplotlib.pyplot as plt
-import numpy as np
-from scipy.stats import gaussian_kde
-from scipy.ndimage import gaussian_filter1d
 import json
+from pathlib import Path
+import matplotlib.pyplot as plt
 
-with open('/Users/brentkong/Documents/curling/figures/simulations/frequency_dict_100000.json', 'r') as f:
+plt.rcParams.update({
+    "figure.dpi": 120,
+    "savefig.dpi": 300,
+    "axes.spines.top": False,
+    "axes.spines.right": False,
+    "axes.grid": True,
+    "grid.alpha": 0.25,
+    "grid.linestyle": "--",
+    "axes.titleweight": "semibold",
+    "font.size": 11,
+})
+
+COLORS = {
+    "frequency_bar": "#6BAED6",   
+    "win":           "#2171B5",   
+    "draw":          "#41AB5D",   
+
+    "leading": "#2A9D8F", 
+    "tied": "#E9C46A",
+    "trailing": "#E76F51",
+}
+
+
+def finish_plot(save_path: Path):
+    plt.tight_layout()
+    plt.savefig(save_path)
+    plt.show()
+
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+SIMULATIONS_DIR = PROJECT_ROOT / "figures" / "simulations"
+SAVE_DIR = PROJECT_ROOT / "figures" / "graphs"
+
+with open(SIMULATIONS_DIR / "frequency_dict_100000.json", "r") as f:
     data = json.load(f)
 
 frequency_dict = data[0]
 wins_dict = data[1]
-loss_dict = data[2]
 draws_dict = data[3]
-hammer_analysis = data[4]
 hammer_summary_6 = data[5]
-by_margin_raw_6 = data[6]["by_margin"]
 hammer_summary_7 = data[7]
-by_margin_raw_7 = data[8]["by_margin"]
 hammer_summary_8 = data[9]
-by_margin_raw_8 = data[10]["by_margin"]
 matches = frequency_dict.pop("matches")
-mode = "percent_8"
 
-if mode == "frequency": 
-    categories = list(frequency_dict.keys())
-    frequencies = list(frequency_dict.values())
 
-    plt.figure(figsize=(8, 6))
-    plt.bar(categories, frequencies, color='skyblue')
-    plt.title('Frequencies of PowerPlays called per end')
-    plt.xlabel('End')
-    plt.ylabel('Frequency')
-    plt.savefig(f'/Users/brentkong/Documents/curling/figures/graphs/Frequency_End_{matches}.png')
-    plt.show()
-elif mode == "win-draw": 
-    win_draw_dict = {}
-    for key, value in frequency_dict.items():
-        win_draw_dict[key] = (wins_dict[key] + draws_dict[key]) / (frequency_dict[key] if frequency_dict[key] != 0 else 1)
-    
-    categories = list(win_draw_dict.keys())
-    frequencies = list(win_draw_dict.values())
 
-    plt.figure(figsize=(8, 6))
-    plt.bar(categories, frequencies, color='#8dd3c7')
-    plt.title('Win-Draw Percentage per PowerPlay called at a specific end')
-    plt.xlabel('End')
-    plt.ylabel('Percentage')
-    plt.savefig(f'/Users/brentkong/Documents/curling/figures/graphs/Win_Draw_Per_End_{matches}.png')
-    plt.show()
-elif mode == "win": 
-    win_draw_dict = {}
-    for key, value in frequency_dict.items():
-        win_draw_dict[key] = (wins_dict[key]) / (frequency_dict[key] if frequency_dict[key] != 0 else 1)
-    
-    categories = list(win_draw_dict.keys())
-    frequencies = list(win_draw_dict.values())
 
-    plt.figure(figsize=(8, 6))
-    plt.bar(categories, frequencies, color='#8dd3c7')
-    plt.title('Win Percentage per PowerPlay called at a specific end')
-    plt.xlabel('End')
-    plt.ylabel('Percentage')
-    plt.savefig(f'/Users/brentkong/Documents/curling/figures/graphs/Win_Per_End_{matches}.png')
-    plt.show()
-elif mode == "hammer":
-    hammer_counts = hammer_analysis['hammer_start']
-    no_hammer_counts = hammer_analysis['no_hammer_start']
 
-    labels = ['Wins', 'Draws', 'Losses']
+categories = list(frequency_dict.keys())
+frequencies = list(frequency_dict.values())
+plt.figure(figsize=(8, 6))
+plt.bar(categories, frequencies, color=COLORS["frequency_bar"], edgecolor="white", linewidth=0.8)
+plt.title("Frequencies of PowerPlays Called per End")
+plt.xlabel("End")
+plt.ylabel("Frequency")
+finish_plot(SAVE_DIR / f"Frequency_End_{matches}.png")
 
-    hammer_values = [hammer_counts['wins'], hammer_counts['draws'], hammer_counts['loss']]
-    no_hammer_values = [no_hammer_counts['wins'], no_hammer_counts['draws'], no_hammer_counts['loss']]
-    colors = ['#8dd3c7', '#ffffb3', '#fb8072']
 
-    plt.figure(figsize=(12, 6))
 
-    plt.subplot(1, 2, 1)
-    plt.pie(hammer_values, labels=labels, autopct='%1.1f%%', startangle=90, colors=colors)
-    plt.title('Root Team Starts with Hammer')
 
-    plt.subplot(1, 2, 2)
-    plt.pie(no_hammer_values, labels=labels, autopct='%1.1f%%', startangle=90, colors=colors)
-    plt.title('Root Team Starts without Hammer')
 
-    plt.tight_layout()
-    plt.savefig(f'/Users/brentkong/Documents/curling/figures/graphs/hammer_vs_no_hammer_pie_{matches}.png')
-    plt.show()
+win_percent = {}
+draw_percent = {}
+for key in frequency_dict:
+    total = frequency_dict[key] if frequency_dict[key] != 0 else 1
+    win_percent[key] = wins_dict[key] / total
+    draw_percent[key] = draws_dict[key] / total
 
-elif mode == "by_end_6":
-    by_margin = {int(k): int(v) for k, v in by_margin_raw_6.items()}
+categories = list(win_percent.keys())
+win_vals = [win_percent[k] for k in categories]
+draw_vals = [draw_percent[k] for k in categories]
 
-    margins = []
-    for margin, count in by_margin.items():
-        margins.extend([margin] * count)
+plt.figure(figsize=(9, 6))
+plt.bar(categories, win_vals, label="Win %", color=COLORS["win"], edgecolor="white", linewidth=0.8)
+plt.bar(categories, draw_vals, bottom=win_vals, label="Draw %", color=COLORS["draw"], edgecolor="white", linewidth=0.8)
+plt.title("Win and Draw Percentage per PowerPlay Called at Each End")
+plt.xlabel("End")
+plt.ylabel("Percentage")
+plt.legend(frameon=False)
+finish_plot(SAVE_DIR / f"Win_Draw_Stacked_Per_End_{matches}.png")
 
-    margins = np.array(margins)
 
-    counts, bin_edges = np.histogram(
-        margins,
-        bins=range(min(margins), max(margins) + 2)
+
+
+
+def plot_status_pie(title: str, sizes: list, save_name: str):
+    labels = ["Leading", "Tied", "Trailing"]
+    pie_colors = [COLORS["leading"], COLORS["tied"], COLORS["trailing"]]
+
+    plt.figure(figsize=(7, 6))
+    plt.pie(
+        sizes,
+        labels=labels,
+        colors=pie_colors,
+        autopct="%1.1f%%",
+        startangle=90,
+        wedgeprops={"edgecolor": "white", "linewidth": 1.0},
+        textprops={"color": "#222222"},
     )
+    plt.title(title)
+    plt.axis("equal")
+    finish_plot(SAVE_DIR / save_name)
 
-    smoothed = gaussian_filter1d(counts, sigma=1.0)
-
-    plt.figure()
-    plt.bar(
-        bin_edges[:-1],
-        counts,
-        width=1,
-        align="edge",
-        alpha=0.6,
-        label="Histogram"
-    )
-
-    plt.plot(
-        bin_edges[:-1] + 0.5,
-        smoothed,
-        linewidth=2,
-        label="Smoothed curve"
-    )
-
-    plt.xlabel("Score margin after 5 ends (hammer team)")
-    plt.ylabel("Frequency")
-    plt.title("Score Margin After 5 Ends (Hammer Team)")
-    plt.legend()
-    plt.tight_layout()
-    plt.savefig(f'/Users/brentkong/Documents/curling/figures/graphs/score_margin_6_{matches}.png')
-    plt.show()
-
-
-elif mode == "percent_6":
-    labels = [
-        "Leading after 5",
-        "Tied after 5",
-        "Trailing after 5"
-    ]
-    sizes = [
+plot_status_pie(
+    "End 6 Hammer Team Status After 5 Ends",
+    [
         hammer_summary_6["caller_leading_after_5"],
         hammer_summary_6["caller_tied_after_5"],
-        hammer_summary_6["caller_trailing_after_5"]
-    ]
+        hammer_summary_6["caller_trailing_after_5"],
+    ],
+    f"win_after_5_{matches}.png",
+)
 
-    plt.figure()
-    plt.pie(sizes, labels=labels, autopct='%1.1f%%', startangle=90)
-    plt.title("End 6 Hammer Team Status After 5 Ends")
-    plt.axis("equal") 
-    plt.tight_layout()
-    plt.savefig(f'/Users/brentkong/Documents/curling/figures/graphs/win_after_5_{matches}.png')
-    plt.show()
-elif mode == "by_end_7":
-    by_margin = {int(k): int(v) for k, v in by_margin_raw_7.items()}
-
-    margins = []
-    for margin, count in by_margin.items():
-        margins.extend([margin] * count)
-
-    margins = np.array(margins)
-
-    counts, bin_edges = np.histogram(
-        margins,
-        bins=range(min(margins), max(margins) + 2)
-    )
-
-    smoothed = gaussian_filter1d(counts, sigma=1.0)
-
-    plt.figure()
-    plt.bar(
-        bin_edges[:-1],
-        counts,
-        width=1,
-        align="edge",
-        alpha=0.6,
-        label="Histogram"
-    )
-
-    plt.plot(
-        bin_edges[:-1] + 0.5,
-        smoothed,
-        linewidth=2,
-        label="Smoothed curve"
-    )
-
-    plt.xlabel("Score margin after 6 ends (hammer team)")
-    plt.ylabel("Frequency")
-    plt.title("Score Margin After 6 Ends (Hammer Team)")
-    plt.legend()
-    plt.tight_layout()
-    plt.savefig(f'/Users/brentkong/Documents/curling/figures/graphs/score_margin_7_{matches}.png')
-    plt.show()
-
-elif mode == "percent_7":
-    labels = [
-        "Leading after 6",
-        "Tied after 6",
-        "Trailing after 6"
-    ]
-    sizes = [
+plot_status_pie(
+    "End 7 Hammer Team Status After 6 Ends",
+    [
         hammer_summary_7["caller_leading_after_6"],
         hammer_summary_7["caller_tied_after_6"],
-        hammer_summary_7["caller_trailing_after_6"]
-    ]
+        hammer_summary_7["caller_trailing_after_6"],
+    ],
+    f"win_after_6_{matches}.png",
+)
 
-    plt.figure()
-    plt.pie(sizes, labels=labels, autopct='%1.1f%%', startangle=90)
-    plt.title("End 7 Hammer Team Status After 6 Ends")
-    plt.axis("equal") 
-    plt.tight_layout()
-    plt.savefig(f'/Users/brentkong/Documents/curling/figures/graphs/win_after_6_{matches}.png')
-    plt.show()
-
-elif mode == "by_end_8":
-    by_margin = {int(k): int(v) for k, v in by_margin_raw_8.items()}
-
-    margins = []
-    for margin, count in by_margin.items():
-        margins.extend([margin] * count)
-
-    margins = np.array(margins)
-
-    counts, bin_edges = np.histogram(
-        margins,
-        bins=range(min(margins), max(margins) + 2)
-    )
-
-    smoothed = gaussian_filter1d(counts, sigma=1.0)
-
-    plt.figure()
-    plt.bar(
-        bin_edges[:-1],
-        counts,
-        width=1,
-        align="edge",
-        alpha=0.6,
-        label="Histogram"
-    )
-
-    plt.plot(
-        bin_edges[:-1] + 0.5,
-        smoothed,
-        linewidth=2,
-        label="Smoothed curve"
-    )
-
-    plt.xlabel("Score margin after 7 ends (hammer team)")
-    plt.ylabel("Frequency")
-    plt.title("Score Margin After 7 Ends (Hammer Team)")
-    plt.legend()
-    plt.tight_layout()
-    plt.savefig(f'/Users/brentkong/Documents/curling/figures/graphs/score_margin_8_{matches}.png')
-    plt.show()
-
-elif mode == "percent_8":
-    labels = [
-        "Leading after 7",
-        "Tied after 7",
-        "Trailing after 7"
-    ]
-    sizes = [
+plot_status_pie(
+    "End 8 Hammer Team Status After 7 Ends",
+    [
         hammer_summary_8["caller_leading_after_7"],
         hammer_summary_8["caller_tied_after_7"],
-        hammer_summary_8["caller_trailing_after_7"]
-    ]
-
-    plt.figure()
-    plt.pie(sizes, labels=labels, autopct='%1.1f%%', startangle=90)
-    plt.title("End 8 Hammer Team Status After 7 Ends")
-    plt.axis("equal") 
-    plt.tight_layout()
-    plt.savefig(f'/Users/brentkong/Documents/curling/figures/graphs/win_after_7_{matches}.png')
-    plt.show()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        hammer_summary_8["caller_trailing_after_7"],
+    ],
+    f"win_after_7_{matches}.png",
+)
