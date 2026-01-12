@@ -51,7 +51,7 @@ matches = frequency_dict.pop("matches")
 
 categories = list(frequency_dict.keys())
 frequencies = list(frequency_dict.values())
-plt.figure(figsize=(8, 6))
+plt.figure(figsize=(9, 6))
 plt.bar(categories, frequencies, color=COLORS["frequency_bar"], edgecolor="white", linewidth=0.8)
 plt.title("Frequencies of PowerPlays Called per End")
 plt.xlabel("End")
