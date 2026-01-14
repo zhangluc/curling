@@ -1,0 +1,8 @@
+seaborn
+statsmodels
+pyro-ppl
+pandas
+numpy
+torch
+matplotlib
+scikit-learn
