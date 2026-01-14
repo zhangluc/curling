@@ -9,6 +9,7 @@ This project implements a **Monte Carlo Tree Search (MCTS) agent** guided by a *
 * [Installation](#installation)
 * [Project Overview](#project-overview)
 * [Folder Structure](#folder-structure)
+* [Code Reference: File-by-File Overview](#code-reference-file-by-file-overview)
 * [Data Processing & Train-Test Split](#data-processing--train-test-split)
 * [Bayesian Model Training](#bayesian-model-training)
 * [EV Evaluation Function](#ev-evaluation-function)
@@ -158,7 +159,358 @@ curling/
 ├── useful_commands.md
 └── weights
 ```
+---
 
+# Code Reference: File-by-File Overview
+
+This section describes the purpose and functionality of each core Python file in the project.
+
+---
+
+## Core Simulation & Modeling Code (`/code`)
+
+---
+
+### `train_bayesian_model.py`
+
+**Purpose:**
+Trains the Bayesian regression model used to estimate expected end score.
+
+**What it does:**
+
+* Loads `train_df.csv` from `data_processing/train_test_data/`
+* Builds a Bayesian linear regression model in Pyro
+* Uses NUTS (Hamiltonian Monte Carlo) for posterior inference
+* Learns distributions over:
+
+  * Regression weights
+  * Bias term
+  * Observation noise
+* Saves posterior samples to `weights/`
+
+**Role in pipeline:**
+Provides the trained probabilistic model used by the EV evaluation function and MCTS.
+
+---
+
+### `bayesian_ev.py`
+
+**Purpose:**
+Implements the Expected Value (EV) evaluation function.
+
+**What it does:**
+
+* Loads posterior samples from `weights/`
+* Computes posterior predictive distributions for a given game state
+* Returns:
+
+  * Expected end score (mean)
+  * Predictive uncertainty (standard deviation)
+
+**Role in pipeline:**
+Acts as the evaluation function for MCTS and for offline model testing.
+
+---
+
+### `gamestate.py`
+
+**Purpose:**
+Defines the curling game environment and state transition dynamics.
+
+**What it does:**
+
+* Represents a full curling match state:
+
+  * Current score
+  * Hammer possession
+  * End number
+  * Power Play availability for both teams
+* Generates legal actions:
+
+  * Call Power Play
+  * Do not call Power Play
+* Advances the game forward by simulating an end
+* Samples stochastic scoring outcomes from `PROB_TABLE_END_DIFF`
+
+**Role in pipeline:**
+Provides the environment model used by MCTS for simulation and rollout.
+
+---
+
+### `prob_table.py`
+
+**Purpose:**
+Defines the empirical scoring model.
+
+**What it does:**
+
+* Stores `PROB_TABLE_END_DIFF`
+* This table represents the empirical probability distribution over:
+
+  * End score differentials (−6 to +6)
+  * Conditioned on:
+
+    * Hammer possession
+    * Power Play usage
+
+**Role in pipeline:**
+Acts as the stochastic transition model for the simulator.
+
+---
+
+### `mcts.py`
+
+**Purpose:**
+Implements the Monte Carlo Tree Search algorithm.
+
+**What it does:**
+
+* Implements UCT (Upper Confidence Trees) for action selection
+* Uses Bayesian EV estimates to evaluate leaf nodes
+* Handles:
+
+  * Selection
+  * Expansion
+  * Simulation (rollouts using `GameState`)
+  * Backpropagation of EV-based rewards
+* Learns an optimal Power Play timing policy over a full match horizon
+
+**Role in pipeline:**
+Core decision-making engine of the project.
+
+---
+
+### `run_mcts.py`
+
+**Purpose:**
+Runs large-scale curling match simulations using the MCTS agent.
+
+**What it does:**
+
+* Randomly initializes match states
+* Runs a full MCTS search for each game
+* Simulates thousands of matches
+* Tracks:
+
+  * Power Play usage frequency by end
+  * Win/draw/loss rates
+  * Hammer advantage statistics
+* Saves aggregate statistics to JSON files
+
+**Outputs:**
+
+* `frequency_dict_<matches>.json`
+* Win/draw/loss distributions
+* Hammer vs non-hammer performance
+
+---
+
+### `test.py`
+
+**Purpose:**
+Evaluates the Bayesian regression model on held-out test data.
+
+**What it does:**
+
+* Loads `test_df.csv`
+* Runs posterior predictive inference
+* Computes evaluation metrics:
+
+  * RMSE
+  * MAE
+  * Bias
+  * R²
+* Saves results to CSV
+
+**Output:**
+
+```
+data_processing/model_results/Model_Results_Continuous.csv
+```
+
+---
+
+## Data & Analysis Scripts (`/figures`)
+
+---
+
+### `analysis.py`
+
+**Purpose:**
+Generates summary statistics and tables used in reporting.
+
+**What it does:**
+
+* Loads processed datasets and simulation outputs
+* Computes:
+
+  * End-level scoring distributions
+  * Power Play frequency statistics
+  * Margin distributions
+* Produces publication-ready tables
+
+**Role in pipeline:**
+Statistical analysis layer for results.
+
+---
+
+### `graphs.py`
+
+**Purpose:**
+Generates all publication-quality figures.
+
+**What it does:**
+
+* Creates:
+
+  * End frequency bar charts
+  * Win/draw curves
+  * Margin distributions
+  * Correlation heatmaps
+* Saves figures to `/figures/graphs/` and `/figures/simulations/`
+
+**Role in pipeline:**
+Visualization and reporting.
+
+---
+
+### `exploratory_graphs.py`
+
+**Purpose:**
+Exploratory data analysis and sanity checking.
+
+**What it does:**
+
+* Visualizes:
+
+  * End score distributions
+  * Hammer effects
+  * Power Play effects
+* Used during dataset understanding and validation
+
+**Role in pipeline:**
+EDA and validation.
+
+---
+
+### `pp_effect.py`
+
+**Purpose:**
+Analyzes the empirical effect of Power Play usage.
+
+**What it does:**
+
+* Compares scoring with and without Power Play
+* Computes:
+
+  * Mean score differences
+  * Win rate shifts
+  * Margin distributions
+
+**Role in pipeline:**
+Empirical grounding for simulation assumptions.
+
+---
+
+## Notebooks (`/data_processing`)
+
+---
+
+### `data_processing.ipynb`
+
+**Purpose:**
+Transforms raw Curling Canada shot-level data into model-ready datasets.
+
+**What it does:**
+
+* Cleans and normalizes raw data
+* Aggregates:
+
+  * Shot-level → end-level
+  * End-level → game-level
+* Creates:
+
+  * `ends_processed.csv`
+  * `games_processed.csv`
+  * `stones_processed.csv`
+  * `bayesian_training.csv`
+
+**Role in pipeline:**
+Primary data engineering stage.
+
+---
+
+### `train_test_split.ipynb`
+
+**Purpose:**
+Creates the training and evaluation datasets.
+
+**What it does:**
+
+* Loads `bayesian_training.csv`
+* Performs an 80–20 train-test split
+* Saves:
+
+  * `train_df.csv`
+  * `test_df.csv`
+
+**Role in pipeline:**
+Model evaluation pipeline.
+
+---
+
+### `data_analysis.ipynb`
+
+**Purpose:**
+Exploratory analysis and validation notebook.
+
+**What it does:**
+
+* Explores distributions of:
+
+  * End scores
+  * Margins
+  * Hammer advantage
+  * Power Play usage
+* Validates modeling assumptions used by MCTS and Bayesian regression
+
+**Role in pipeline:**
+Research validation and sanity checking.
+
+---
+
+## Weights (`/weights`)
+
+**Purpose:**
+Stores trained Bayesian posterior samples.
+
+**Contents:**
+
+* Regression coefficients
+* Bias terms
+* Noise variance
+* Used by `bayesian_ev.py` and MCTS
+
+---
+
+## Summary
+
+| File                      | Role                      |
+| ------------------------- | ------------------------- |
+| `train_bayesian_model.py` | Bayesian model training   |
+| `bayesian_ev.py`          | Expected value prediction |
+| `gamestate.py`            | Curling environment       |
+| `prob_table.py`           | Empirical scoring model   |
+| `mcts.py`                 | Monte Carlo Tree Search   |
+| `run_mcts.py`             | Simulation runner         |
+| `test.py`                 | Model evaluation          |
+| `analysis.py`             | Statistical analysis      |
+| `graphs.py`               | Figure generation         |
+| `exploratory_graphs.py`   | Exploratory analysis      |
+| `pp_effect.py`            | Power Play impact study   |
+| `data_processing.ipynb`   | Data engineering          |
+| `train_test_split.ipynb`  | Train-test split          |
+| `data_analysis.ipynb`     | Validation & EDA          |
 ---
 
 # Data Processing & Train-Test Split
