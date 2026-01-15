@@ -37,7 +37,14 @@ task_labels <- c(
 
 # ============================================================
 # A. NON-HAMMER OPENING SHOT EFFECTIVENESS (ShotID = 7)
+# Split by whether the HAMMER TEAM used Power Play
 # ============================================================
+
+# Get hammer team's power play indicator per end
+hammer_pp_status <- ends %>%
+  filter(Has_Hammer == 1) %>%                # hammer team row
+  select(GameUID, EndID, Used_PP) %>%
+  rename(Opponent_PP = Used_PP)
 
 opening_shot_nonhammer <- stones %>%
   filter(ShotID == 7) %>%
@@ -49,10 +56,14 @@ opening_shot_nonhammer <- stones %>%
     Has_Hammer_Stone = Has_Hammer.x,
     Has_Hammer_End   = Has_Hammer.y
   ) %>%
-  filter(Has_Hammer_Stone == 0)   # team that throws first
+  filter(Has_Hammer_Stone == 0) %>%          # team that throws first (non-hammer)
+  left_join(
+    hammer_pp_status,
+    by = c("GameUID", "EndID")
+  )
 
 opening_shot_summary <- opening_shot_nonhammer %>%
-  group_by(Task, Used_PP) %>%
+  group_by(Task, Opponent_PP) %>%
   summarise(
     Avg_Execution  = mean(Points, na.rm = TRUE),          # shot execution (0–4)
     Avg_End_Points = mean(Result.y, na.rm = TRUE),        # points scored in end
@@ -60,10 +71,22 @@ opening_shot_summary <- opening_shot_nonhammer %>%
     N = n(),
     .groups = "drop"
   ) %>%
-  filter(N >= 20) %>%                                     # stability threshold
   mutate(
-    Shot_Type   = recode(as.character(Task), !!!task_labels),
-    Opponent_PP = ifelse(Used_PP == 1, "Opponent Used PP", "No Power Play")
+    Shot_Type = recode(as.character(Task), !!!task_labels),
+    Opponent_PP = ifelse(Opponent_PP == 1, "Opponent Used PP", "No Power Play")
+  ) %>%
+  group_by(Opponent_PP) %>%
+  mutate(
+    Shot_Type = ifelse(N < 20, "Other", Shot_Type)        # <-- collapse rare ones
+  ) %>%
+  ungroup() %>%
+  group_by(Shot_Type, Opponent_PP) %>%                    # <-- re-summarize after grouping
+  summarise(
+    Avg_Execution  = weighted.mean(Avg_Execution, w = N, na.rm = TRUE),
+    Avg_End_Points = weighted.mean(Avg_End_Points, w = N, na.rm = TRUE),
+    Big_End_Rate   = weighted.mean(Big_End_Rate, w = N, na.rm = TRUE),
+    N = sum(N),
+    .groups = "drop"
   ) %>%
   arrange(Opponent_PP, desc(Avg_End_Points))
 
