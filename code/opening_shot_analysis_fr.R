@@ -109,4 +109,15 @@ response_analysis <- hammer_response %>%
   ) %>%
   arrange(desc(Avg_End_Points))
 
-print(response_analysis)
+# ============================================================
+# C. VISUALIZATION — HAMMER RESPONSE HEATMAP
+# ============================================================
+
+plot_data <- response_analysis %>%
+  mutate(
+    Used_PP = factor(Used_PP, labels = c("No Power Play", "Power Play")),
+    First_Shot  = factor(First_Shot),
+    Hammer_Shot = factor(Hammer_Shot)
+  )
+
+print(plot_data)
