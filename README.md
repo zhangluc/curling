@@ -585,7 +585,7 @@ EDA and validation.
 
 ---
 
-### `pp_effect.py`
+### `shot_effect.py`
 
 **Purpose:**
 Analyzes the empirical effect of Power Play usage.
@@ -699,7 +699,7 @@ Stores trained Bayesian posterior samples.
 | `analysis.py`             | Statistical analysis      |
 | `graphs.py`               | Figure generation         |
 | `exploratory_graphs.py`   | Exploratory analysis      |
-| `pp_effect.py`            | Power Play impact study   |
+| `shot_effect.py`          | Shot type impact study    |
 | `data_processing.ipynb`   | Data engineering          |
 | `train_test_split.ipynb`  | Train-test split          |
 | `data_analysis.ipynb`     | Validation & EDA          |
