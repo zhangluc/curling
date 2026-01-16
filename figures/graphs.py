@@ -55,7 +55,7 @@ plt.figure(figsize=(9, 6))
 plt.bar(categories, frequencies, color=COLORS["frequency_bar"], edgecolor="white", linewidth=0.8)
 plt.xlabel("End")
 plt.ylabel("Frequency")
-finish_plot(SAVE_DIR / f"Frequency_End_{matches}.png")
+finish_plot(SAVE_DIR / f"frequency_end_{matches}.png")
 
 
 
@@ -78,7 +78,7 @@ plt.bar(categories, draw_vals, bottom=win_vals, label="Draw %", color=COLORS["dr
 plt.xlabel("End")
 plt.ylabel("Percentage")
 plt.legend(frameon=False)
-finish_plot(SAVE_DIR / f"Win_Draw_Stacked_Per_End_{matches}.png")
+finish_plot(SAVE_DIR / f"win_draw_{matches}.png")
 
 
 

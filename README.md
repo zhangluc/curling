@@ -130,34 +130,58 @@ curling/
 ├── data_processing
 │   ├── data_analysis.ipynb
 │   ├── data_processing.ipynb
-│   ├── train_test_split.ipynb
-│   │
 │   ├── model_results
 │   │   └── Model_Results_Continuous.csv
-│   │
 │   ├── processed_data
 │   │   ├── bayesian_training.csv
 │   │   ├── ends_processed.csv
 │   │   ├── ends_with_counterfactual.csv
 │   │   ├── games_processed.csv
 │   │   └── stones_processed.csv
-│   │
-│   └── train_test_data
-│       ├── test_df.csv
-│       └── train_df.csv
+│   ├── train_test_data
+│   │   ├── test_df.csv
+│   │   └── train_df.csv
+│   └── train_test_split.ipynb
 │
 ├── figures
 │   ├── analysis
-│   ├── graphs
-│   ├── simulations
+│   │   ├── data_analysis
+│   │   │   ├── hammer_response.csv
+│   │   │   ├── opening_shot.csv
+│   │   │   ├── powerplay_end_summary.csv
+│   │   │   └── powerplay_entry_margin_stats_6_8.csv
+│   │   ├── end_frequency_combined
+│   │   │   ├── end_1_frequency_combined.png
+│   │   │   ├── end_2_frequency_combined.png
+│   │   │   ├── end_3_frequency_combined.png
+│   │   │   ├── end_4_frequency_combined.png
+│   │   │   ├── end_5_frequency_combined.png
+│   │   │   ├── end_6_frequency_combined.png
+│   │   │   ├── end_7_frequency_combined.png
+│   │   │   └── end_8_frequency_combined.png
+│   │   └── simulation_statistics
+│   │       ├── analysis_100000_both.csv
+│   │       └── analysis_margin100000_both.csv
 │   ├── analysis.py
 │   ├── exploratory_graphs.py
+│   ├── graphs
+│   │   ├── distribution_pp_tail.png
+│   │   ├── frequency_end_100000.png
+│   │   ├── pp_effectiveness.png
+│   │   ├── win_after_5_100000.png
+│   │   ├── win_after_6_100000.png
+│   │   ├── win_after_7_100000.png
+│   │   └── win_draw_100000.png
 │   ├── graphs.py
-│   └── pp_effect.py
+│   ├── shot_effect.py
+│   └── simulations
+│       └── frequency_dict_100000.json
 │
 ├── requirements.txt
-├── useful_commands.md
 └── weights
+    ├── testing_weights
+    │   └── unitddpm_BaysianRegression_20260111_193054_82cf67d5_weights.pt
+    └── unitddpm_BaysianRegression_20260111_193019_830f987c_weights.pt
 ```
 ---
 
@@ -392,24 +416,23 @@ Exploratory data analysis and sanity checking.
 EDA and validation.
 
 ---
-
-### `pp_effect.py`
+### `shot_effect.py`
 
 **Purpose:**
-Analyzes the empirical effect of Power Play usage.
+Analyzes the empirical impact of opening-shot strategy and hammer response under Power Play.
 
 **What it does:**
 
-* Compares scoring with and without Power Play
+* Evaluates non-hammer opening shots and hammer response shots
+* Compares outcomes with and without Power Play
 * Computes:
 
-  * Mean score differences
-  * Win rate shifts
-  * Margin distributions
+  * Execution quality
+  * End-level scoring
+  * Big-end frequency
 
 **Role in pipeline:**
-Empirical grounding for simulation assumptions.
-
+Empirical grounding for early-end tactical dynamics and Power Play modeling assumptions.
 ---
 
 ## Notebooks (`/data_processing`)
@@ -507,7 +530,7 @@ Stores trained Bayesian posterior samples.
 | `analysis.py`             | Statistical analysis      |
 | `graphs.py`               | Figure generation         |
 | `exploratory_graphs.py`   | Exploratory analysis      |
-| `pp_effect.py`            | Power Play impact study   |
+| `shot_effect.py`          | Shot type impact study    |
 | `data_processing.ipynb`   | Data engineering          |
 | `train_test_split.ipynb`  | Train-test split          |
 | `data_analysis.ipynb`     | Validation & EDA          |

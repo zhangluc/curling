@@ -5,8 +5,9 @@ from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 DATA_DIR = PROJECT_ROOT / "data_processing" / "processed_data"
-SAVE_DIR = PROJECT_ROOT / "figures" / "analysis" / "simulation_statistics"
 SIMULATIONS_DIR = PROJECT_ROOT / "figures" / "simulations"
+SAVE_DIR_PRIOR = PROJECT_ROOT / "figures" / "analysis" / "data_analysis"
+SAVE_DIR_SIM = PROJECT_ROOT / "figures" / "analysis" / "simulation_statistics"
 
 df = pd.read_csv(DATA_DIR / "ends_processed.csv")
 
@@ -88,8 +89,8 @@ margin_df = pd.DataFrame.from_dict(margin_stats, orient="index")
 margin_df.index.name = "Dataset"
 margin_df.reset_index(inplace=True)
 
-summary_df.to_csv(SAVE_DIR / "powerplay_end_summary.csv", index=False)
-margin_df.to_csv(SAVE_DIR / "powerplay_entry_margin_stats_6_8.csv", index=False)
+summary_df.to_csv(SAVE_DIR_PRIOR / "powerplay_end_summary.csv", index=False)
+margin_df.to_csv(SAVE_DIR_PRIOR / "powerplay_entry_margin_stats_6_8.csv", index=False)
 
 
 with open(SIMULATIONS_DIR / 'frequency_dict_100000.json', 'r') as f:
@@ -165,5 +166,5 @@ df2.reset_index(inplace=True)
 
 df.index = df.index.astype(int)
 
-df.to_csv(SAVE_DIR / f'analysis_{matches}_both.csv', index = False)
-df2.to_csv(SAVE_DIR / f'analysis_margin{matches}_both.csv', index = False)
+df.to_csv(SAVE_DIR_SIM / f'analysis_{matches}_both.csv', index = False)
+df2.to_csv(SAVE_DIR_SIM / f'analysis_margin{matches}_both.csv', index = False)
